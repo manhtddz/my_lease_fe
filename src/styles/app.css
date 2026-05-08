@@ -1,0 +1,286 @@
+/* App shell — bổ sung trên token trong index.css */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  text-align: left;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.app-brand {
+  font-weight: 600;
+  color: var(--text-h);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.app-brand:hover {
+  color: var(--accent);
+}
+
+.app-nav {
+  display: flex;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+}
+
+.app-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.app-nav a:hover,
+.app-nav a.active {
+  color: var(--accent);
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px 20px 40px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.app-page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+.app-muted {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 0 0 20px;
+}
+
+.app-card {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  background: var(--bg);
+}
+
+.app-card h1 {
+  font-size: 1.5rem;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.app-field {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.app-field label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: var(--text-h);
+}
+
+.app-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.app-field input:focus {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 0;
+}
+
+.app-field-error {
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-field-error {
+    color: #f87171;
+  }
+}
+
+.app-alert {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.app-alert--error {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  color: var(--text-h);
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  text-decoration: none;
+}
+
+.app-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.app-btn--primary {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  width: 100%;
+}
+
+.app-btn--danger {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.4);
+  color: #b91c1c;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-btn--danger {
+    color: #fca5a5;
+  }
+}
+
+.app-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.app-table th,
+.app-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  background: var(--code-bg);
+}
+
+.app-table tr:last-child td {
+  border-bottom: none;
+}
+
+.app-table tbody tr:hover td {
+  background: var(--accent-bg);
+}
+
+.app-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.app-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.app-home-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin-top: 20px;
+}
+
+.app-home-card {
+  display: block;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-h);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.app-home-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.app-home-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+
+.app-auth-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
