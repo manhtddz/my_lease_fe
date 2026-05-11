@@ -6,32 +6,43 @@ export function delay(ms: number) {
     })
 }
 
+export const removeAccents = (str: string) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
+  };
+
 export const userMockUtils = {
     INITIAL_USERS: [
-        { id: 1, name: 'Alice Demo', email: 'alice@demo.test', password: 'demo123' },
-        { id: 2, name: 'Bob Demo', email: 'bob@demo.test', password: 'demo123' },
-        { id: 3, name: 'Carol Demo', email: 'carol@demo.test', password: 'secret' },
-        { id: 4, name: 'David Demo', email: 'david@demo.test', password: 'demo123' },
-        { id: 5, name: 'Emma Demo', email: 'emma@demo.test', password: 'demo123' },
-        { id: 6, name: 'Frank Demo', email: 'frank@demo.test', password: 'demo123' },
-        { id: 7, name: 'Grace Demo', email: 'grace@demo.test', password: 'demo123' },
-        { id: 8, name: 'Henry Demo', email: 'henry@demo.test', password: 'demo123' },
-        { id: 9, name: 'Ivy Demo', email: 'ivy@demo.test', password: 'demo123' },
-        { id: 10, name: 'Jack Demo', email: 'jack@demo.test', password: 'demo123' },
-        { id: 11, name: 'Kate Demo', email: 'kate@demo.test', password: 'demo123' },
-        { id: 12, name: 'Leo Demo', email: 'leo@demo.test', password: 'demo123' },
+        { id: 1, name: 'Alice Demo', email: 'alice@demo.test', password: 'demo123', status: 1 },
+        { id: 2, name: 'Bob Demo', email: 'bob@demo.test', password: 'demo123', status: 1 },
+        { id: 3, name: 'Carol Demo', email: 'carol@demo.test', password: 'secret', status: 1 },
+        { id: 4, name: 'David Demo', email: 'david@demo.test', password: 'demo123', status: 1 },
+        { id: 5, name: 'Emma Demo', email: 'emma@demo.test', password: 'demo123', status: 1 },
+        { id: 6, name: 'Frank Demo', email: 'frank@demo.test', password: 'demo123', status: 1 },
+        { id: 7, name: 'Grace Demo', email: 'grace@demo.test', password: 'demo123', status: 1 },
+        { id: 8, name: 'Henry Demo', email: 'henry@demo.test', password: 'demo123', status: 1 },
+        { id: 9, name: 'Ivy Demo', email: 'ivy@demo.test', password: 'demo123', status: 1 },
+        { id: 10, name: 'Jack Demo', email: 'jack@demo.test', password: 'demo123', status: 1 },
+        { id: 11, name: 'Kate Demo', email: 'kate@demo.test', password: 'demo123', status: 1 },
+        { id: 12, name: 'Leo Demo', email: 'leo@demo.test', password: 'demo123', status: 1 },
     ],
 
     validateUserPayload(
-        payload: Omit<User, 'id'>
+        payload: Omit<User, 'id'>,
+        id?: number
     ): { errors: Record<string, string[]>; code: number } | null {
         const errors: Record<string, string[]> = {}
 
         const emailTrim = payload.email.trim().toLowerCase()
         const nameTrim = payload.name.trim()
         const passwordTrim = payload.password.trim()
-
-        // Chọn code theo thứ tự ưu tiên tương tự logic if-else trước đây.
+        const status = payload.status
+        if (status !== 1 && status !== 0) {
+            errors.status = ['Trạng thái không hợp lệ.']
+        }
 
         if (emailTrim === '') {
             errors.email = ['Email không được để trống.']
@@ -47,7 +58,7 @@ export const userMockUtils = {
             errors.password = ['Mật khẩu phải có ít nhất 8 ký tự.']
         }
 
-        const exists = userMockUtils.INITIAL_USERS.some(u => u.email === payload.email);
+        const exists = userMockUtils.INITIAL_USERS.some(u => u.email === payload.email && (id ? u.id !== id : true));
 
         if (exists) {
             if (!errors.email) {

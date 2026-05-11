@@ -1,20 +1,31 @@
-import { type FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { clearUsersError, fetchUserByIdThunk, updateUserThunk } from '../../reducers/userSlice'
+import {
+  clearUsersError,
+  fetchUserByIdThunk,
+  updateUserThunk,
+} from '../../reducers/userSlice'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import type { User } from '../../types/UserType'
 import { userApi } from '../../services/user'
+import { BasicInput } from '../../components/forms/BasicInput'
+import { PasswordInput } from '../../components/forms/inputs/PasswordInput'
+import { BasicButton } from '../../components/buttons/BasicButton'
+import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
+import { Checkbox } from '../../components/forms/inputs/Checkbox'
 
 export function UserUpdatePage() {
-  const { userId } = useParams<{ userId: string }>()
+  const { userId: userIdParam } = useParams<{ userId: string }>()
+  const userIdNum = userIdParam ? parseInt(userIdParam, 10) : NaN
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const [user, setUser] = useState<User>({
-    id: parseInt(userId),
+    id: Number.isFinite(userIdNum) ? userIdNum : 0,
     name: '',
     email: '',
     password: '',
+    status: 1,
   })
 
   const status = useAppSelector((s) => s.users.status)
@@ -29,109 +40,101 @@ export function UserUpdatePage() {
   }, [dispatch])
 
   useEffect(() => {
+    if (!Number.isFinite(userIdNum)) return
     const loadUser = async () => {
-      const data = await userApi.getUserById(parseInt(userId)); // Gọi thẳng API từ service
-      setUser(data);
-    };
-
-    loadUser();
-  }, [userId]);
+      const data = await userApi.getUserById(userIdNum)
+      setUser(data)
+    }
+    void loadUser()
+  }, [userIdNum])
 
   useEffect(() => {
-    dispatch(fetchUserByIdThunk(parseInt(userId)))
-  }, [dispatch, userId])
+    if (!Number.isFinite(userIdNum)) return
+    void dispatch(fetchUserByIdThunk(userIdNum))
+  }, [dispatch, userIdNum])
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const fd = new FormData(form)
-    const name = String(fd.get('name') ?? '').trim()
-    const email = String(fd.get('email') ?? '').trim()
-    const password = String(fd.get('password') ?? '')
+  async function handleSubmit() {
+    const name = String(user.name).trim()
+    const email = String(user.email).trim()
+    const password = String(user.password)
+    const status = Number(user.status)
 
     const result = await dispatch(
-      updateUserThunk({ id: parseInt(userId), name, email, password }),
+      updateUserThunk({ id: userIdNum, name, email, password, status }),
     )
     if (updateUserThunk.fulfilled.match(result)) {
       navigate('/users', { replace: true })
     }
   }
 
-  const busy = status === 'loading'
+  const busy = status === PageLoadStatus.LOADING
 
   return (
     <>
-      <h1 className="app-page-title">Sửa người dùng</h1>
-      <p className="app-muted">Cập nhật chỉnh sửa sẽ bổ sung sau.</p>
+      <h1 className="h3 mb-2">Sửa người dùng</h1>
+      <p className="text-body-secondary mb-4">
+        Cập nhật chỉnh sửa sẽ bổ sung sau.
+      </p>
 
-      {error && status === 'failed' && (
-        <div className="app-alert app-alert--error" role="alert">
+      {error && status === PageLoadStatus.FAILED ? (
+        <div className="alert alert-danger" role="alert">
           {error}
         </div>
-      )}
+      ) : null}
 
       <form
-        onSubmit={handleSubmit}
+        className="mx-auto"
         style={{ maxWidth: 440 }}
       >
-        <div className="app-field">
-          <label htmlFor="create-name">Tên</label>
-          <input
-            id="create-name"
-            name="name"
-            value={user?.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
-            autoComplete="name"
-            required
+        <BasicInput
+          id="update-name"
+          name="name"
+          label="Tên"
+          autoComplete="name"
+          value={user.name}
+          onChange={(e) => setUser({ ...user, name: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { name: validationErrors.name } : { name: [] }}
+        />
+        <BasicInput
+          id="update-email"
+          name="email"
+          label="Email"
+          autoComplete="email"
+          value={user.email}
+          onChange={(e) => setUser({ ...user, email: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { email: validationErrors.email } : { email: [] }}
+        />
+        <PasswordInput
+          id="update-password"
+          name="password"
+          label="Mật khẩu"
+          autoComplete="new-password"
+          value={user.password}
+          onChange={(e) => setUser({ ...user, password: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { password: validationErrors.password } : { password: [] }}
+          showPasswordToggle={false}
+        />
+        <Checkbox
+          name="status"
+          label="Trạng thái"
+          optionLabel="Hoạt động"
+          value={user.status === 1}
+          onChange={(value) => setUser({ ...user, status: value ? 1 : 0 })}
+        />
+        <div className="d-flex flex-wrap gap-2 mt-4">
+          <BasicButton
+            onClick={handleSubmit}
+            className="btn btn-primary"
             disabled={busy}
+            children={busy ? 'Đang lưu…' : 'Sửa'}
           />
-          {validationErrors?.name?.[0] && (
-            <div className="app-field-error">{validationErrors.name[0]}</div>
-          )}
-        </div>
-        <div className="app-field">
-          <label htmlFor="create-email">Email</label>
-          <input
-            id="create-email"
-            name="email"
-            type="email"
-            value={user?.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-            autoComplete="email"
-            required
-            disabled={busy}
-          />
-          {validationErrors?.email?.[0] && (
-            <div className="app-field-error">{validationErrors.email[0]}</div>
-          )}
-        </div>
-        <div className="app-field">
-          <label htmlFor="create-password">Mật khẩu</label>
-          <input
-            id="create-password"
-            name="password"
-            type="password"
-            value={user?.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-            autoComplete="new-password"
-            required
-            minLength={8}
-            disabled={busy}
-          />
-          {validationErrors?.password?.[0] && (
-            <div className="app-field-error">{validationErrors.password[0]}</div>
-          )}
-        </div>
-        <div className="app-form-actions">
-          <button
-            type="submit"
-            className="app-btn app-btn--primary"
-            style={{ width: 'auto', minWidth: 120 }}
-            disabled={busy}
-          >
-            {busy ? 'Đang lưu…' : 'Sửa'}
-          </button>
-          <Link className="app-btn" to="/users">
+          <Link className="btn btn-outline-secondary" to="/users">
             Hủy
           </Link>
         </div>

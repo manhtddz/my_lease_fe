@@ -1,0 +1,29 @@
+/* Xóa icon mặc định và sửa padding */
+.custom-select-trigger {
+    background-image: none !important;
+    padding-right: 0.75rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Hiệu ứng khi hover vào ô select */
+.custom-select-trigger:hover {
+    border-color: #0d6efd;
+}
+
+/* Custom lại item cho đẹp hơn */
+.custom-dropdown-item {
+    padding: 8px 12px !important;
+    font-size: 14px;
+    transition: background 0.15s ease;
+}
+
+.custom-dropdown-item:hover {
+    background-color: #f8f9fa !important;
+    color: #0d6efd !important;
+}
+
+.custom-dropdown-item.active {
+    background-color: #e7f1ff !important;
+    color: #0d6efd !important;
+    font-weight: 500;
+}

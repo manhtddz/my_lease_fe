@@ -12,31 +12,56 @@ export function MainLayout() {
     navigate('/login', { replace: true })
   }
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `nav-link${isActive ? ' active' : ''}`
+
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <NavLink to="/" className="app-brand" end>
-          My Lease
-        </NavLink>
-        <nav className="app-nav" aria-label="Chính">
-          <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} end>
-            Trang chủ
+    <div className="d-flex flex-column min-vh-100">
+      <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary border-bottom sticky-top">
+        <div className="container-fluid">
+          <NavLink className="navbar-brand fw-semibold text-primary" to="/" end>
+            My Lease
           </NavLink>
-          <NavLink
-            to="/users"
-            className={({ isActive }) => (isActive ? 'active' : '')}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNav"
+            aria-controls="mainNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            Người dùng
-          </NavLink>
-        </nav>
-        <div className="app-header-actions">
-          <span>{currentUser?.name ?? currentUser?.email}</span>
-          <button type="button" className="app-btn" onClick={handleLogout}>
-            Đăng xuất
+            <span className="navbar-toggler-icon" />
           </button>
+          <div className="collapse navbar-collapse" id="mainNav">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <NavLink className={navLinkClass} to="/" end>
+                  Trang chủ
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className={navLinkClass} to="/users">
+                  Người dùng
+                </NavLink>
+              </li>
+            </ul>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <span className="navbar-text small text-body-secondary">
+                {currentUser?.name ?? currentUser?.email}
+              </span>
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handleLogout}
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
         </div>
-      </header>
-      <main className="app-main">
+      </nav>
+      <main className="container py-4 flex-grow-1">
         <Outlet />
       </main>
     </div>

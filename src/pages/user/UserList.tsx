@@ -7,67 +7,121 @@ import { BasicButton } from '../../components/buttons/BasicButton'
 import { useUserList } from '../../hooks/user-hooks/useUserList'
 
 export function UserListPage() {
-
-  const { list, total, status, setPageIndex, sortBy, sortDir, pageCount, effectivePage, showLoadingPlaceholder, handleSort, handleSubmit, modalDeleteConfirm, error } = useUserList()
+  const userListHook = useUserList()
 
   return (
     <>
-      <div className="app-toolbar">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
         <div>
-          <h1 className="app-page-title" style={{ marginBottom: 4 }}>
-            Người dùng
-          </h1>
-          <p className="app-muted" style={{ margin: 0 }}>
-            Tổng {total} bản ghi
+          <h1 className="h3 mb-1">Người dùng</h1>
+          <p className="text-body-secondary small mb-0">
+            Tổng {userListHook.total} bản ghi
           </p>
         </div>
-        <Link className="app-btn app-btn--primary" to="/users/create" style={{ width: 'auto' }}>
+        <Link className="btn btn-primary" to="/users/create">
           Thêm mới
         </Link>
       </div>
-      <UserSearchForm onSearch={handleSubmit} />
+      <UserSearchForm onSearch={userListHook.handleSubmit} />
 
-      {error && (
-        <div className="app-alert app-alert--error" role="alert">
-          {error}
+      {userListHook.error ? (
+        <div className="alert alert-danger" role="alert">
+          {userListHook.error}
         </div>
-      )}
+      ) : null}
 
-      <div className="app-table-wrap">
-        <table className="app-table">
-          <thead>
+      <div className="table-responsive border rounded">
+        <table className="table table-hover table-striped mb-0 align-middle">
+          <thead className="table-light">
             <tr>
-              <th onClick={() => handleSort('id')} style={{ cursor: 'pointer' }}>{sortBy === 'id' ? (sortDir === 'asc' ? '▲' : '▼') : '↕'} ID</th>
-              <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>{sortBy === 'name' ? (sortDir === 'asc' ? '▲' : '▼') : '↕'} Tên</th>
-              <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>{sortBy === 'email' ? (sortDir === 'asc' ? '▲' : '▼') : '↕'} Email</th>
-              <th style={{ width: 100 }}></th>
+              <th
+                role="button"
+                className="user-select-none"
+                onClick={() => userListHook.handleSort('id')}
+              >
+                {userListHook.sortBy === 'id'
+                  ? userListHook.sortDir === 'asc'
+                    ? '▲ '
+                    : '▼ '
+                  : '↕ '}
+                ID
+              </th>
+              <th
+                role="button"
+                className="user-select-none"
+                onClick={() => userListHook.handleSort('name')}
+              >
+                {userListHook.sortBy === 'name'
+                  ? userListHook.sortDir === 'asc'
+                    ? '▲ '
+                    : '▼ '
+                  : '↕ '}
+                Tên
+              </th>
+              <th
+                role="button"
+                className="user-select-none"
+                onClick={() => userListHook.handleSort('email')}
+              >
+                {userListHook.sortBy === 'email'
+                  ? userListHook.sortDir === 'asc'
+                    ? '▲ '
+                    : '▼ '
+                  : '↕ '}
+                Email
+              </th>
+              <th
+                role="button"
+                className="user-select-none"
+                onClick={() => userListHook.handleSort('status')}
+              >
+                {userListHook.sortBy === 'status'
+                  ? userListHook.sortDir === 'asc'
+                    ? '▲ '
+                    : '▼ '
+                  : '↕ '}
+                Trạng thái
+              </th>
+              <th style={{ width: 180 }} />
             </tr>
           </thead>
           <tbody>
-            {showLoadingPlaceholder ? (
+            {userListHook.showLoadingPlaceholder ? (
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 24 }}>
+                <td colSpan={4} className="text-center py-5 text-body-secondary">
                   Đang tải…
                 </td>
               </tr>
-            ) : list.length === 0 ? (
+            ) : userListHook.list.length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 24 }}>
+                <td colSpan={4} className="text-center py-5 text-body-secondary">
                   Chưa có dữ liệu.
                 </td>
               </tr>
             ) : (
-              list.map((u) => (
+              userListHook.list.map((u) => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
-                  <td>
-                    <Link className="app-btn app-btn--secondary" to={`/users/update/${u.id}`} style={{ width: 'auto' }}>
+                  <td>{u.status === 1 ? 'Hoạt động' : 'Không hoạt động'}</td>
+                  <td className="text-end text-nowrap">
+                    <Link
+                      className="btn btn-outline-secondary btn-sm me-2"
+                      to={`/users/update/${u.id}`}
+                    >
                       Sửa
                     </Link>
-
-                    <BasicButton onClick={() => modalDeleteConfirm.handleDelete(u.id)} disabled={status === PageLoadStatus.LOADING || showLoadingPlaceholder} className="app-btn app-btn--danger" >
+                    <BasicButton
+                      onClick={() =>
+                        userListHook.modalDeleteConfirm.handleDelete(u.id)
+                      }
+                      disabled={
+                        userListHook.status === PageLoadStatus.LOADING ||
+                        userListHook.showLoadingPlaceholder
+                      }
+                      className="btn btn-outline-danger btn-sm"
+                    >
                       Xóa
                     </BasicButton>
                   </td>
@@ -78,12 +132,20 @@ export function UserListPage() {
         </table>
       </div>
 
-      <BasicPaginator effectivePage={effectivePage} pageCount={pageCount} status={status} showLoadingPlaceholder={showLoadingPlaceholder} setPageIndex={setPageIndex} />
+      <BasicPaginator
+        effectivePage={userListHook.effectivePage}
+        pageCount={userListHook.pageCount}
+        status={userListHook.status}
+        showLoadingPlaceholder={userListHook.showLoadingPlaceholder}
+        setPageIndex={userListHook.setPageIndex}
+      />
 
       <DeleteConfirmModal
-        isOpen={modalDeleteConfirm.isDeleteModalOpen}
-        onClose={() => modalDeleteConfirm.setIsDeleteModalOpen(false)}
-        userId={modalDeleteConfirm.deleteId}
+        isOpen={userListHook.modalDeleteConfirm.isDeleteModalOpen}
+        onClose={() =>
+          userListHook.modalDeleteConfirm.setIsDeleteModalOpen(false)
+        }
+        userId={userListHook.modalDeleteConfirm.deleteId}
         domainObject="người dùng"
       />
     </>

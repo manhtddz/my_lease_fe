@@ -1,0 +1,19 @@
+/* Load after Bootstrap — brand primary aligned with former app accent */
+
+[data-bs-theme='light'] {
+  --bs-primary: #aa3bff;
+  --bs-primary-rgb: 170, 59, 255;
+}
+
+[data-bs-theme='dark'] {
+  --bs-primary: #c084fc;
+  --bs-primary-rgb: 192, 132, 252;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}

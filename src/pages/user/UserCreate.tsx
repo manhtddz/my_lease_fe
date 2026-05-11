@@ -1,7 +1,12 @@
-import { type FormEvent, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { clearUsersError, createUserThunk } from '../../reducers/userSlice'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
+import { BasicInput } from '../../components/forms/BasicInput'
+import { PasswordInput } from '../../components/forms/inputs/PasswordInput'
+import { BasicButton } from '../../components/buttons/BasicButton'
+import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
+import { Select } from '../../components/forms/inputs/Select'
 
 export function UserCreatePage() {
   const dispatch = useAppDispatch()
@@ -10,6 +15,7 @@ export function UserCreatePage() {
   const status = useAppSelector((s) => s.users.status)
   const error = useAppSelector((s) => s.users.error)
   const validationErrors = useAppSelector((s) => s.users.validationErrors)
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', status: undefined })
 
   useEffect(() => {
     dispatch(clearUsersError())
@@ -18,91 +24,103 @@ export function UserCreatePage() {
     }
   }, [dispatch])
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const fd = new FormData(form)
-    const name = String(fd.get('name') ?? '').trim()
-    const email = String(fd.get('email') ?? '').trim()
-    const password = String(fd.get('password') ?? '')
+  async function handleSubmit() {
+    const name = String(formData.name).trim()
+    const email = String(formData.email).trim()
+    const password = String(formData.password)
+    const status = Number(formData.status)
 
-    const result = await dispatch(
-      createUserThunk({ name, email, password }),
-    )
+    const result = await dispatch(createUserThunk({ name, email, password, status }))
     if (createUserThunk.fulfilled.match(result)) {
       navigate('/users', { replace: true })
     }
   }
 
-  const busy = status === 'loading'
+  const busy = status === PageLoadStatus.LOADING
 
   return (
     <>
-      <h1 className="app-page-title">Thêm người dùng</h1>
-      <p className="app-muted">Cập nhật chỉnh sửa sẽ bổ sung sau.</p>
+      <h1 className="h3 mb-2">Thêm người dùng</h1>
+      <p className="text-body-secondary mb-4">
+        Cập nhật chỉnh sửa sẽ bổ sung sau.
+      </p>
 
-      {error && status === 'failed' && (
-        <div className="app-alert app-alert--error" role="alert">
+      {error && status === PageLoadStatus.FAILED ? (
+        <div className="alert alert-danger" role="alert">
           {error}
         </div>
-      )}
+      ) : null}
 
       <form
-        onSubmit={handleSubmit}
+        className="mx-auto"
         style={{ maxWidth: 440 }}
       >
-        <div className="app-field">
-          <label htmlFor="create-name">Tên</label>
-          <input
-            id="create-name"
-            name="name"
-            autoComplete="name"
-            required
+        <BasicInput
+          id="create-name"
+          name="name"
+          label="Tên"
+          autoComplete="name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { name: validationErrors.name } : { name: [] }}
+        />
+        <BasicInput
+          id="create-email"
+          name="email"
+          label="Email"
+          autoComplete="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { email: validationErrors.email } : { email: [] }}
+        />
+        <PasswordInput
+          id="create-password"
+          name="password"
+          label="Mật khẩu"
+          autoComplete="new-password"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          required
+          disabled={busy}
+          validationErrors={validationErrors ? { password: validationErrors.password } : { password: [] }}
+          showPasswordToggle={false}
+        />
+        {/* <Radio
+          name="status"
+          label="Trạng thái"
+          options={[{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Không hoạt động' }]}
+          value={formData.status}
+          onChange={(value) => setFormData({ ...formData, status: Number(value) })}
+        /> */}
+        {/* <Checkbox
+          name="status"
+          label="Trạng thái"
+          optionLabel="Hoạt động"
+          value={formData.status === 1}
+          onChange={(value) => setFormData({ ...formData, status: value ? 1 : 0 })}
+        /> */}
+        <Select
+          isSearch={true}
+          value={formData.status}
+          options={[{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Không hoạt động' }]}
+          placeholder="Chọn trạng thái"
+          name="status"
+          onChange={(value) => setFormData({ ...formData, status: value })}
+          validationErrors={validationErrors ? { status: validationErrors.status } : { status: [] }}
+          showError={true}
+        />
+        <div className="d-flex flex-wrap gap-2 mt-4">
+          <BasicButton
+            className="btn btn-primary"
+            onClick={handleSubmit}
             disabled={busy}
+            children={busy ? 'Đang lưu…' : 'Tạo'}
           />
-          {validationErrors?.name?.[0] && (
-            <div className="app-field-error">{validationErrors.name[0]}</div>
-          )}
-        </div>
-        <div className="app-field">
-          <label htmlFor="create-email">Email</label>
-          <input
-            id="create-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            disabled={busy}
-          />
-          {validationErrors?.email?.[0] && (
-            <div className="app-field-error">{validationErrors.email[0]}</div>
-          )}
-        </div>
-        <div className="app-field">
-          <label htmlFor="create-password">Mật khẩu</label>
-          <input
-            id="create-password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            disabled={busy}
-          />
-          {validationErrors?.password?.[0] && (
-            <div className="app-field-error">{validationErrors.password[0]}</div>
-          )}
-        </div>
-        <div className="app-form-actions">
-          <button
-            type="submit"
-            className="app-btn app-btn--primary"
-            style={{ width: 'auto', minWidth: 120 }}
-            disabled={busy}
-          >
-            {busy ? 'Đang lưu…' : 'Tạo'}
-          </button>
-          <Link className="app-btn" to="/users">
+          <Link className="btn btn-outline-secondary" to="/users">
             Hủy
           </Link>
         </div>

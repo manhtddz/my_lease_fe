@@ -1,7 +1,10 @@
-import { type FormEvent, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { clearAuthError, loginThunk } from '../reducers/authSlice'
 import { useAppDispatch, useAppSelector } from '../reducers/hooks'
+import { PasswordInput } from '../components/forms/inputs/PasswordInput'
+import { BasicInput } from '../components/forms/BasicInput'
+import { BasicButton } from '../components/buttons/BasicButton'
 
 export function LoginPage() {
   const dispatch = useAppDispatch()
@@ -15,6 +18,7 @@ export function LoginPage() {
   const isLoading = useAppSelector((s) => s.auth.isLoading)
   const error = useAppSelector((s) => s.auth.error)
   const validationErrors = useAppSelector((s) => s.auth.validationErrors)
+  const [formData, setFormData] = useState({ email: '', password: '' })
 
   useEffect(() => {
     dispatch(clearAuthError())
@@ -27,69 +31,58 @@ export function LoginPage() {
     return <Navigate to={from} replace />
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const fd = new FormData(form)
-    const email = String(fd.get('email') ?? '').trim()
-    const password = String(fd.get('password') ?? '')
+  async function handleSubmit() {
+    const email = String(formData.email).trim()
+    const password = String(formData.password)
 
-    const result = await dispatch(
-      loginThunk({ email, password }),
-    )
+    const result = await dispatch(loginThunk({ email, password }))
     if (loginThunk.fulfilled.match(result)) {
       navigate(from, { replace: true })
     }
   }
 
   return (
-    <div className="app-auth-center">
-      <div className="app-card">
-        <h1>Đăng nhập</h1>
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-body-secondary px-3 py-4">
+      <div className="card shadow-sm w-100" style={{ maxWidth: 420 }}>
+        <div className="card-body p-4">
+          <h1 className="h4 text-center mb-4">Đăng nhập</h1>
 
-        {error && (
-          <div className="app-alert app-alert--error" role="alert">
-            {error}
-          </div>
-        )}
+          {error ? (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          ) : null}
 
-        <form onSubmit={handleSubmit}>
-          <div className="app-field">
-            <label htmlFor="login-email">Email</label>
-            <input
-              id="login-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              disabled={isLoading}
-            />
-            {validationErrors?.email?.[0] && (
-              <div className="app-field-error">{validationErrors.email[0]}</div>
-            )}
-          </div>
-          <div className="app-field">
-            <label htmlFor="login-password">Mật khẩu</label>
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              disabled={isLoading}
-            />
-            {validationErrors?.password?.[0] && (
-              <div className="app-field-error">{validationErrors.password[0]}</div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="app-btn app-btn--primary"
+          <BasicInput
+            id="login-email"
+            name="email"
+            label="Email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            autoComplete="email"
+            required
             disabled={isLoading}
-          >
-            {isLoading ? 'Đang đăng nhập…' : 'Đăng nhập'}
-          </button>
-        </form>
+            validationErrors={validationErrors ? { email: validationErrors.email } : {}}
+          />
+          <PasswordInput
+            id="login-password"
+            name="password"
+            label="Mật khẩu"
+            autoComplete="current-password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            required
+            disabled={isLoading}
+            validationErrors={validationErrors ? { password: validationErrors.password } : {}}
+          />
+          <BasicButton
+            className="btn btn-primary w-100"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            children={isLoading ? 'Đang đăng nhập…' : 'Đăng nhập'}
+          />
+        </div>
       </div>
     </div>
   )

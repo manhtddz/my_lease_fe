@@ -1,11 +1,10 @@
 import MockAdapter from 'axios-mock-adapter';
 import { axiosInstance } from './apiInstance';
-import type { User, UserDataListParams } from '../types/UserType';
+import type { UserDataListParams } from '../types/UserType';
 import { userMockUtils } from '../utils/simulator';
 
 const mock = new MockAdapter(axiosInstance, { delayResponse: 800 });
 
-let _userStore: User[] = [...userMockUtils.INITIAL_USERS]
 
 // GET List with Params
 mock.onGet('/users').reply((config) => {
@@ -18,7 +17,7 @@ mock.onGet('/users').reply((config) => {
     const pageIndex = Math.max(params?.pageIndex ?? 0, 0)
     const pageSize = Math.max(params?.pageSize ?? 5, 1)
 
-    const filtered = _userStore.filter(u =>
+    const filtered = userMockUtils.INITIAL_USERS.filter(u =>
         (name ? u.name.toLowerCase().includes(name) : true) &&
         (email ? u.email.toLowerCase().includes(email) : true),
     )
@@ -33,7 +32,7 @@ mock.onGet('/users').reply((config) => {
 // GET User by ID
 mock.onGet(/\/users\/\d+/).reply((config) => {
     const id = parseInt(config.url!.split('/').pop()!);
-    const user = _userStore.find(u => u.id === id)
+    const user = userMockUtils.INITIAL_USERS.find(u => u.id === id)
     if (!user) return [404, { message: `Không tìm thấy user với id=${id}.` }];
     return [200, user];
 });
@@ -51,7 +50,7 @@ mock.onPost('/users').reply((config) => {
     }
 
     const newUser = { ...payload, id: Date.now() };
-    _userStore.push(newUser);
+    userMockUtils.INITIAL_USERS.push(newUser);
     return [200, newUser];
 });
 
@@ -60,11 +59,11 @@ mock.onPut(/\/users\/\d+/).reply((config) => {
     const id = parseInt(config.url!.split('/').pop()!);
     const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
 
-    const user = _userStore.find(u => u.id === id)
+    const user = userMockUtils.INITIAL_USERS.find(u => u.id === id)
 
     if (!user) return [404, { message: `Không tìm thấy user với id=${id}.` }];
 
-    const validation = userMockUtils.validateUserPayload(payload)
+    const validation = userMockUtils.validateUserPayload(payload, id)
     if (validation) {
         return [validation.code, {
             message: 'Dữ liệu không hợp lệ.',
@@ -72,14 +71,14 @@ mock.onPut(/\/users\/\d+/).reply((config) => {
         }];
     }
 
-    _userStore = _userStore.map(u => u.id === id ? { ...u, ...payload } : u);
+    userMockUtils.INITIAL_USERS = userMockUtils.INITIAL_USERS.map(u => u.id === id ? { ...u, ...payload } : u);
     return [200, { id, ...payload }];
 });
 
 // DELETE User
 mock.onDelete(/\/users\/\d+/).reply((config) => {
     const id = parseInt(config.url!.split('/').pop()!);
-    _userStore = _userStore.filter(u => u.id !== id);
+    userMockUtils.INITIAL_USERS = userMockUtils.INITIAL_USERS.filter(u => u.id !== id);
     return [200, { id }];
 });
 
@@ -88,7 +87,7 @@ mock.onPost('/auth/login').reply((config) => {
     const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
     const email = payload.email.trim().toLowerCase()
 
-    const user = _userStore.find(u => u.email === email)
+    const user = userMockUtils.INITIAL_USERS.find(u => u.email === email)
 
     if (!user) {
         return [401, { message: 'Email không tồn tại.' }];

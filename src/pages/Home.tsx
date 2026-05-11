@@ -6,15 +6,23 @@ export function HomePage() {
 
   return (
     <>
-      <h1 className="app-page-title">
+      <h1 className="h3 mb-2">
         Xin chào{name ? `, ${name}` : ''}
       </h1>
-      <p className="app-muted">Chọn mục bên dưới để quản lý dữ liệu.</p>
-      <div className="app-home-grid">
-        <Link className="app-home-card" to="/users">
-          <strong>Người dùng</strong>
-          <span>Xem danh sách, thêm và xóa người dùng.</span>
-        </Link>
+      <p className="text-body-secondary mb-4">
+        Chọn mục bên dưới để quản lý dữ liệu.
+      </p>
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        <div className="col">
+          <Link className="card h-100 text-decoration-none shadow-sm" to="/users">
+            <div className="card-body">
+              <strong className="d-block text-primary mb-2">Người dùng</strong>
+              <span className="text-body-secondary small">
+                Xem danh sách, thêm và xóa người dùng.
+              </span>
+            </div>
+          </Link>
+        </div>
       </div>
     </>
   )
