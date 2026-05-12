@@ -1,9 +1,12 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { logout } from '../reducers/authSlice'
 import { useAppDispatch, useAppSelector } from '../reducers/hooks'
+import { Checkbox } from '../components/forms/inputs/Checkbox'
+import { useTranslation } from 'react-i18next'
 
 export function MainLayout() {
   const dispatch = useAppDispatch()
+  const { i18n } = useTranslation()
   const navigate = useNavigate()
   const currentUser = useAppSelector((s) => s.auth.currentUser)
 
@@ -45,8 +48,18 @@ export function MainLayout() {
                   Người dùng
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink className={navLinkClass} to="/tenants">
+                  Khách hàng
+                </NavLink>
+              </li>
             </ul>
             <div className="d-flex align-items-center gap-2 flex-wrap">
+              <Checkbox
+                className="form-switch lang-switch mb-0" // Thêm class này của Bootstrap 5
+                value={i18n.language === 'en'} // true nếu là tiếng Anh
+                onChange={(isEn) => i18n.changeLanguage(isEn ? 'en' : 'vi')}
+              />
               <span className="navbar-text small text-body-secondary">
                 {currentUser?.name ?? currentUser?.email}
               </span>

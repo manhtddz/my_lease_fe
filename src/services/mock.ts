@@ -2,6 +2,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { axiosInstance } from './apiInstance';
 import type { UserDataListParams } from '../types/UserType';
 import { userMockUtils } from '../utils/simulator';
+import type { TenantDataListParams } from '../types/TenantType';
+import { tenantMockUtils } from '../utils/tenantMockUtils';
 
 const mock = new MockAdapter(axiosInstance, { delayResponse: 800 });
 
@@ -12,6 +14,7 @@ mock.onGet('/users').reply((config) => {
 
     const name = params?.name?.trim().toLowerCase() ?? ''
     const email = params?.email?.trim().toLowerCase() ?? ''
+    const status = params?.status ?? []
     const sortBy = params?.sortBy ?? 'id'
     const sortDir = params?.sortDir ?? 'asc'
     const pageIndex = Math.max(params?.pageIndex ?? 0, 0)
@@ -19,7 +22,8 @@ mock.onGet('/users').reply((config) => {
 
     const filtered = userMockUtils.INITIAL_USERS.filter(u =>
         (name ? u.name.toLowerCase().includes(name) : true) &&
-        (email ? u.email.toLowerCase().includes(email) : true),
+        (email ? u.email.toLowerCase().includes(email) : true) &&
+        (status.length > 0 ? status.includes(u.status) : true),
     )
 
     const sorted = userMockUtils.sortUsers(filtered, sortBy, sortDir)
@@ -79,6 +83,82 @@ mock.onPut(/\/users\/\d+/).reply((config) => {
 mock.onDelete(/\/users\/\d+/).reply((config) => {
     const id = parseInt(config.url!.split('/').pop()!);
     userMockUtils.INITIAL_USERS = userMockUtils.INITIAL_USERS.filter(u => u.id !== id);
+    return [200, { id }];
+});
+
+// GET List with Params
+mock.onGet('/tenants').reply((config) => {
+    const params: TenantDataListParams = config.params || {};
+
+    const name = params?.name?.trim().toLowerCase() ?? ''
+    const phone_number = params?.phone_number?.trim() ?? ''
+    const sortBy = params?.sortBy ?? 'id'
+    const sortDir = params?.sortDir ?? 'asc'
+    const pageIndex = Math.max(params?.pageIndex ?? 0, 0)
+    const pageSize = Math.max(params?.pageSize ?? 5, 1)
+
+    const filtered = tenantMockUtils.INITIAL_TENANTS.filter(t =>
+        (name ? t.name.toLowerCase().includes(name) : true) &&
+        (phone_number ? t.phone_number.toLowerCase().includes(phone_number) : true),
+    )
+
+    const sorted = tenantMockUtils.sortTenants(filtered, sortBy, sortDir)
+    const start = pageIndex * pageSize
+    const items = sorted.slice(start, start + pageSize)
+
+    return [200, { items, total: filtered.length, pageIndex, pageSize }];
+});
+
+// GET Tenant by ID
+mock.onGet(/\/tenants\/\d+/).reply((config) => {
+    const id = parseInt(config.url!.split('/').pop()!);
+    const tenant = tenantMockUtils.INITIAL_TENANTS.find(t => t.id === id)
+    if (!tenant) return [404, { message: `Không tìm thấy tenant với id=${id}.` }];
+    return [200, tenant];
+});
+
+// POST Create Tenant with Validation
+mock.onPost('/tenants').reply((config) => {
+    const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+
+    const validation = tenantMockUtils.validateTenantPayload(payload)
+    if (validation) {
+        return [validation.code, {
+            message: 'Dữ liệu không hợp lệ.',
+            errors: validation.errors,
+        }];
+    }
+
+    const newTenant = { ...payload, id: Date.now() };
+    tenantMockUtils.INITIAL_TENANTS.push(newTenant);
+    return [200, newTenant];
+});
+
+// PUT Update Tenant
+mock.onPut(/\/tenants\/\d+/).reply((config) => {
+    const id = parseInt(config.url!.split('/').pop()!);
+    const payload = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+
+    const tenant = tenantMockUtils.INITIAL_TENANTS.find(t => t.id === id)
+
+    if (!tenant) return [404, { message: `Không tìm thấy tenant với id=${id}.` }];
+
+    const validation = tenantMockUtils.validateTenantPayload(payload, id)
+    if (validation) {
+        return [validation.code, {
+            message: 'Dữ liệu không hợp lệ.',
+            errors: validation.errors,
+        }];
+    }
+
+    tenantMockUtils.INITIAL_TENANTS = tenantMockUtils.INITIAL_TENANTS.map(t => t.id === id ? { ...t, ...payload } : t);
+    return [200, { id, ...payload }];
+});
+
+// DELETE Tenant
+mock.onDelete(/\/tenants\/\d+/).reply((config) => {
+    const id = parseInt(config.url!.split('/').pop()!);
+    tenantMockUtils.INITIAL_TENANTS = tenantMockUtils.INITIAL_TENANTS.filter(t => t.id !== id);
     return [200, { id }];
 });
 

@@ -22,7 +22,7 @@ export function Checkbox({
   onChange,
 }: Props) {
   const errorMessage = name ? validationErrors?.[name]?.[0] : null
-
+  const isSwitch = className.includes('form-switch')
   const handleCheckboxChange = (value: boolean) => {
     onChange(value)
   }
@@ -34,7 +34,7 @@ export function Checkbox({
           {label}
         </label>
       ) : null}
-      <div className="form-check">
+      <div className={`form-check${isSwitch ? ' form-switch' : ''}`}>
         <input
           type="checkbox"
           className="form-check-input"
@@ -43,6 +43,7 @@ export function Checkbox({
           checked={value}
           onChange={(e) => handleCheckboxChange(e.target.checked)}
           disabled={disabled}
+          role={isSwitch ? 'switch' : undefined}
         />
         <label className="form-check-label" htmlFor={name}>
           {optionLabel}

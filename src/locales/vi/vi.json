@@ -1,0 +1,9 @@
+{
+    "welcome": "Chào mừng bạn",
+    "login": {
+        "email": "Email",
+        "password": "Mật khẩu",
+        "submit": "Đăng nhập",
+        "loading": "Đang đăng nhập..."
+    }
+}

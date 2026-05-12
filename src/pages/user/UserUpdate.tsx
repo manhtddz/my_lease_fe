@@ -25,7 +25,7 @@ export function UserUpdatePage() {
     name: '',
     email: '',
     password: '',
-    status: 1,
+    status: '',
   })
 
   const status = useAppSelector((s) => s.users.status)
@@ -57,7 +57,7 @@ export function UserUpdatePage() {
     const name = String(user.name).trim()
     const email = String(user.email).trim()
     const password = String(user.password)
-    const status = Number(user.status)
+    const status = String(user.status)
 
     const result = await dispatch(
       updateUserThunk({ id: userIdNum, name, email, password, status }),
@@ -124,8 +124,8 @@ export function UserUpdatePage() {
           name="status"
           label="Trạng thái"
           optionLabel="Hoạt động"
-          value={user.status === 1}
-          onChange={(value) => setUser({ ...user, status: value ? 1 : 0 })}
+          value={user.status === '1'}
+          onChange={(value) => setUser({ ...user, status: value ? '1' : '0' })}
         />
         <div className="d-flex flex-wrap gap-2 mt-4">
           <BasicButton

@@ -1,47 +1,47 @@
 // import { useEffect, useMemo, useState } from "react"
 // import type { UserDataListParams } from "../../types/UserType"
 // import { useAppDispatch, useAppSelector } from "../../reducers/hooks"
-// import { fetchUsersThunk } from "../../reducers/userSlice"
+// import { fetchTenantsThunk } from "../../reducers/tenantSlice"
 // import { PageLoadStatus } from "../../types/enums/PageLoadStatus"
 // import { useModalDeleteConfirm } from "../modal-hooks/useModalDeleteConfirm"
-// import type { UserSearchForm } from "../../types/UserType"
+// import type { TenantSearchForm } from "../../types/TenantType"
+// import type { TenantDataListParams } from "../../types/TenantType"
 // const PAGE_SIZE = 8
 
 
-// export function useUserList() {
+// export function useTenantList() {
 //     const dispatch = useAppDispatch()
 //     const modalDeleteConfirm = useModalDeleteConfirm()
 
-//     const list = useAppSelector((s) => s.users.list)
-//     const total = useAppSelector((s) => s.users.total)
-//     const error = useAppSelector((s) => s.users.error)
-//     const status = useAppSelector((s) => s.users.status)
-//     const refetchSignal = useAppSelector((s) => s.users.refetchSignal)
+//     const list = useAppSelector((s) => s.tenants.list)
+//     const total = useAppSelector((s) => s.tenants.total)
+//     const error = useAppSelector((s) => s.tenants.error)
+//     const status = useAppSelector((s) => s.tenants.status)
+//     const refetchSignal = useAppSelector((s) => s.tenants.refetchSignal)
 
 //     const [pageIndex, setPageIndex] = useState(0)
 //     const [sortBy, setSortBy] = useState(null)
 //     const [sortDir, setSortDir] = useState(null)
-//     const [searchForm, setSearchForm] = useState<UserSearchForm>({ name: '', email: '', status: [] })
+//     const [searchForm, setSearchForm] = useState<TenantSearchForm>({ name: '', phone_number: '' })
 
 
 //     const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
 //     const effectivePage = Math.min(pageIndex, pageCount - 1)
 
-//     const fetchParams = useMemo<UserDataListParams>(() => {
+//     const fetchParams = useMemo<TenantDataListParams>(() => {
 //         return {
 //             pageIndex: effectivePage,
 //             pageSize: PAGE_SIZE,
-//             sortBy: sortBy as UserDataListParams['sortBy'],
-//             sortDir: sortDir as UserDataListParams['sortDir'],
+//             sortBy: sortBy as TenantDataListParams['sortBy'],
+//             sortDir: sortDir as TenantDataListParams['sortDir'],
 //             name: searchForm.name,
-//             email: searchForm.email,
-//             status: searchForm.status
+//             phone_number: searchForm.phone_number,
 //         }
 //     }, [effectivePage, sortBy, sortDir, searchForm])
 
 //     useEffect(() => {
 //         dispatch(
-//             fetchUsersThunk(fetchParams),
+//             fetchTenantsThunk(fetchParams),
 //         )
 //     }, [dispatch, fetchParams, refetchSignal])
 
@@ -65,11 +65,10 @@
 //         }
 //     }
 
-//     const handleSubmit = (searchForm: UserSearchForm) => {
+//     const handleSubmit = (searchForm: TenantSearchForm) => {
 //         setSearchForm({
 //             name: searchForm.name.trim(),
-//             email: searchForm.email.trim(),
-//             status: searchForm.status,
+//             phone_number: searchForm.phone_number.trim(),
 //         });
     
 //         setPageIndex(0);
@@ -93,24 +92,24 @@
 // }
 
 import { useBaseList } from "../base/useBaseList"
-import { fetchUsersThunk } from "../../reducers/userSlice"
-import type { UserSearchForm, UserDataListParams } from "../../types/UserType"
+import type { TenantDataListParams, TenantSearchForm } from "../../types/TenantType"
+import { fetchTenantsThunk } from "../../reducers/tenantSlice"
 
-const initialSearchForm: UserSearchForm = { name: '', email: '', status: [] }
+const initialSearchForm: TenantSearchForm = { name: '', phone_number: '' }
 
-export function useUserList() {
-    return useBaseList<UserSearchForm, UserDataListParams>({
+export function useTenantList() {
+
+    return useBaseList<TenantSearchForm, TenantDataListParams>({
         initialSearchForm,
-        selectSlice: (s) => s.users,
-        fetchThunk: fetchUsersThunk,
-        buildParams: (base, searchForm): UserDataListParams => ({
+        selectSlice: (s) => s.tenants,
+        fetchThunk: fetchTenantsThunk,
+        buildParams: (base, searchForm): TenantDataListParams => ({
             pageIndex: base.pageIndex,
             pageSize: base.pageSize,
-            sortBy: base.sortBy as UserDataListParams['sortBy'],
-            sortDir: base.sortDir as UserDataListParams['sortDir'],
+            sortBy: base.sortBy as TenantDataListParams['sortBy'],
+            sortDir: base.sortDir as TenantDataListParams['sortDir'],
             name: searchForm.name,
-            email: searchForm.email,
-            status: searchForm.status,
-        }),
+            phone_number: searchForm.phone_number,
+        })
     })
 }

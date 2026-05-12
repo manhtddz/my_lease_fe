@@ -8,7 +8,6 @@ export type AuthState = {
   currentUser: PublicUser | null
   error: string | null
   errorCode: number | null
-  validationErrors: Record<string, string[]> | null
   isLoading: boolean
 }
 
@@ -17,7 +16,6 @@ const initialState: AuthState = {
   currentUser: null,
   error: null,
   errorCode: null,
-  validationErrors: null,
   isLoading: false,
 }
 
@@ -39,13 +37,11 @@ const authSlice = createSlice({
       state.currentUser = null
       state.error = null
       state.errorCode = null
-      state.validationErrors = null
       state.isLoading = false
     },
     clearAuthError: (state) => {
       state.error = null
       state.errorCode = null
-      state.validationErrors = null
     },
   },
   extraReducers: (builder) => {
@@ -56,7 +52,6 @@ const authSlice = createSlice({
         state.currentUser = action.payload
         state.error = null
         state.errorCode = null
-        state.validationErrors = null
         state.isLoading = false
       })
 
@@ -69,7 +64,6 @@ const authSlice = createSlice({
           state.isLoading = true
           state.error = null
           state.errorCode = null
-          state.validationErrors = null
         },
       )
 
@@ -89,19 +83,16 @@ const authSlice = createSlice({
             // Validation errors (Laravel-style 401 - Unauthorized)
             case 401: {
               state.error = payload?.message ?? null
-              state.validationErrors = payload?.errors ?? null
               break
             }
             // System error
             case 500: {
               state.error = payload?.message ?? null
-              state.validationErrors = null
               break
             }
 
             default: {
               state.error = payload?.message ?? 'Đã có lỗi xảy ra.'
-              state.validationErrors = payload?.errors ?? null
               break
             }
           }

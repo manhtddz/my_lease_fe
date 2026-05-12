@@ -1,4 +1,4 @@
-import type { PageLoadStatusType } from '../../types/enums/PageLoadStatus'
+import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
 
 type Props = {
   effectivePage: number
@@ -15,7 +15,7 @@ export function BasicPaginator({
   showLoadingPlaceholder,
   setPageIndex,
 }: Props) {
-  const loading = status === 'loading'
+  const loading = status === PageLoadStatus.LOADING
 
   return (
     <div className="d-flex align-items-center justify-content-end gap-2 gap-md-3 mt-3 small text-body-secondary">

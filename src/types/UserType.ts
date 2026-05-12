@@ -3,7 +3,7 @@ export type User = {
     name: string
     email: string
     password: string
-    status: number
+    status: string
 }
 
 export type PublicUser = Omit<User, 'password'>
@@ -11,6 +11,7 @@ export type PublicUser = Omit<User, 'password'>
 export type UserDataListParams = {
     name?: string
     email?: string
+    status?: string[]
     sortBy?: 'id' | 'name' | 'email' | 'status'
     sortDir?: 'asc' | 'desc'
     pageIndex?: number
@@ -23,3 +24,9 @@ export type UserDataListResult = {
     pageIndex: number
     pageSize: number
 }
+
+export type UserSearchForm = {
+    name: string;
+    email: string;
+    status: string[];
+};

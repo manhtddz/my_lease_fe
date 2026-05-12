@@ -1,0 +1,8 @@
+{
+    "user": {
+        "status": {
+            "1": "Hoạt động",
+            "0": "Không hoạt động"
+        }
+    }
+}

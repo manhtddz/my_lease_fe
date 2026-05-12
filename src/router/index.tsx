@@ -7,6 +7,7 @@ import { HomePage } from '../pages/Home'
 import { UserListPage } from '../pages/user/UserList'
 import { UserCreatePage } from '../pages/user/UserCreate'
 import { UserUpdatePage } from '../pages/user/UserUpdate'
+import { TenantListPage } from '../pages/tenants/TenantList'
 
 
 export const router = createBrowserRouter([
@@ -41,6 +42,18 @@ export const router = createBrowserRouter([
                         path: '/users/update/:userId',
                         element: <UserUpdatePage/>,
                     },
+                    {
+                        path: '/tenants',
+                        element: <TenantListPage />,
+                    },
+                    // {
+                    //     path: '/tenants/create',
+                    //     element: <TenantCreatePage />,
+                    // },
+                    // {
+                    //     path: '/tenants/update/:tenantId',
+                    //     element: <TenantUpdatePage />,
+                    // },
                 ],
             },
         ],

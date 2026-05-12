@@ -5,10 +5,13 @@ import { UserSearchForm } from '../../components/search-forms/UserSearchForm'
 import { BasicPaginator } from '../../components/paginators/BasicPaginator'
 import { BasicButton } from '../../components/buttons/BasicButton'
 import { useUserList } from '../../hooks/user-hooks/useUserList'
+import { useTranslation } from 'react-i18next'
+import { UserStatusEnum } from '../../types/enums/users/UserStatus'
+import type { User } from '../../types/UserType'
 
 export function UserListPage() {
   const userListHook = useUserList()
-
+  const { t } = useTranslation()
   return (
     <>
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
@@ -99,12 +102,12 @@ export function UserListPage() {
                 </td>
               </tr>
             ) : (
-              userListHook.list.map((u) => (
+              userListHook.list.map((u: User) => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
-                  <td>{u.status === 1 ? 'Hoạt động' : 'Không hoạt động'}</td>
+                  <td>{t(UserStatusEnum[u.status])}</td>
                   <td className="text-end text-nowrap">
                     <Link
                       className="btn btn-outline-secondary btn-sm me-2"

@@ -1,0 +1,30 @@
+{
+    "login": {
+        "email": {
+            "required": "Email không được để trống",
+            "invalid": "Email không hợp lệ"
+        },
+        "password": {
+            "required": "Mật khẩu không được để trống",
+            "min": "Mật khẩu phải có ít nhất {{length}} ký tự"
+        }
+    },
+    "user": {
+        "name": {
+            "required": "Tên không được để trống"
+        },
+        "email": {
+            "required": "Email không được để trống",
+            "invalid": "Email không hợp lệ",
+            "exists": "Email đã tồn tại"
+        },
+        "password": {
+            "required": "Mật khẩu không được để trống",
+            "min": "Mật khẩu phải có ít nhất {{length}} ký tự"
+        },
+        "status": {
+            "required": "Trạng thái không được để trống",
+            "invalid": "Trạng thái không hợp lệ"
+        }
+    }
+}

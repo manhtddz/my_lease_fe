@@ -28,7 +28,7 @@ export function Select(props: Props) {
   const errorMessage = props.name ? props.validationErrors?.[props.name]?.[0] : null;
 
   const handleSelect = (value: string | number) => {
-    const newValue = selectedOption?.value === value ? undefined : value;
+    const newValue = selectedOption?.value === value ? '' : value;
     setIsOpen(false);
     props.onChange(newValue);
   };
@@ -112,11 +112,9 @@ export function Select(props: Props) {
         )}
       </div>
 
-      {props.showError && errorMessage && (
-        <div className="text-danger small mt-1 animate__animated animate__fadeInUp" style={{ fontSize: '12px' }}>
-          <i className="bi bi-exclamation-circle me-1"></i>{errorMessage}
-        </div>
-      )}
+      {props.showError && errorMessage ? (
+        <div className="invalid-feedback d-block">{errorMessage}</div>
+      ) : null}
     </div>
   );
 }

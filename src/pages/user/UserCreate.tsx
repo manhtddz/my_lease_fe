@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { clearUsersError, createUserThunk } from '../../reducers/userSlice'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
@@ -7,31 +7,56 @@ import { PasswordInput } from '../../components/forms/inputs/PasswordInput'
 import { BasicButton } from '../../components/buttons/BasicButton'
 import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
 import { Select } from '../../components/forms/inputs/Select'
+import { useTranslation } from 'react-i18next'
+import { extractValidationErrors, extractValidationServerErrors } from '../../utils/form'
+import { userSchema } from '../../validation/users/userSchema'
+import { UserStatusEnum } from '../../types/enums/users/UserStatus'
 
 export function UserCreatePage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const status = useAppSelector((s) => s.users.status)
   const error = useAppSelector((s) => s.users.error)
-  const validationErrors = useAppSelector((s) => s.users.validationErrors)
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', status: undefined })
+  const serverValidationErrors = useAppSelector((s) => s.users.validationErrors)
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', status: '' })
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({});
+
+  const statusOptions = useMemo(() => {
+    return Object.entries(UserStatusEnum).map(([key, value]) => ({
+      value: key,
+      label: t(value),
+    }));
+  }, [t]);
+
+  const translatedServerErrors = useMemo(() => {
+    if (!serverValidationErrors) return {};
+    return extractValidationServerErrors(serverValidationErrors, t);
+  }, [serverValidationErrors, t]);
+
+  const displayErrors = {
+    ...translatedServerErrors,
+    ...clientErrors
+  };
 
   useEffect(() => {
     dispatch(clearUsersError())
-    return () => {
-      dispatch(clearUsersError())
-    }
   }, [dispatch])
 
   async function handleSubmit() {
-    const name = String(formData.name).trim()
-    const email = String(formData.email).trim()
-    const password = String(formData.password)
-    const status = Number(formData.status)
+    setClientErrors({}); // Reset lỗi client cũ
+    dispatch(clearUsersError()); // Reset lỗi server cũ
 
-    const result = await dispatch(createUserThunk({ name, email, password, status }))
-    if (createUserThunk.fulfilled.match(result)) {
+    const result = userSchema.safeParse(formData);
+    if (!result.success) {
+      const formattedErrors = extractValidationErrors(result.error, t);
+      setClientErrors(formattedErrors);
+      return;
+    }
+
+    const createResult = await dispatch(createUserThunk(formData))
+    if (createUserThunk.fulfilled.match(createResult)) {
       navigate('/users', { replace: true })
     }
   }
@@ -58,47 +83,47 @@ export function UserCreatePage() {
         <BasicInput
           id="create-name"
           name="name"
-          label="Tên"
+          label={t('user.name')}
           autoComplete="name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
           disabled={busy}
-          validationErrors={validationErrors ? { name: validationErrors.name } : { name: [] }}
+          validationErrors={displayErrors.name ? displayErrors : {}}
         />
         <BasicInput
           id="create-email"
           name="email"
-          label="Email"
+          label={t('user.email')}
           autoComplete="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
           disabled={busy}
-          validationErrors={validationErrors ? { email: validationErrors.email } : { email: [] }}
+          validationErrors={displayErrors.email ? displayErrors : {}}
         />
         <PasswordInput
           id="create-password"
           name="password"
-          label="Mật khẩu"
+          label={t('user.password')}
           autoComplete="new-password"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
           disabled={busy}
-          validationErrors={validationErrors ? { password: validationErrors.password } : { password: [] }}
+          validationErrors={displayErrors.password ? displayErrors : {}}
           showPasswordToggle={false}
         />
         {/* <Radio
           name="status"
-          label="Trạng thái"
+          label={t('user.status')}
           options={[{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Không hoạt động' }]}
           value={formData.status}
           onChange={(value) => setFormData({ ...formData, status: Number(value) })}
         /> */}
         {/* <Checkbox
           name="status"
-          label="Trạng thái"
+          label={t('user.status')}
           optionLabel="Hoạt động"
           value={formData.status === 1}
           onChange={(value) => setFormData({ ...formData, status: value ? 1 : 0 })}
@@ -106,11 +131,11 @@ export function UserCreatePage() {
         <Select
           isSearch={true}
           value={formData.status}
-          options={[{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Không hoạt động' }]}
-          placeholder="Chọn trạng thái"
+          options={statusOptions}
+          placeholder={t('user.status')}
           name="status"
           onChange={(value) => setFormData({ ...formData, status: value })}
-          validationErrors={validationErrors ? { status: validationErrors.status } : { status: [] }}
+          validationErrors={displayErrors.status ? displayErrors : {}}
           showError={true}
         />
         <div className="d-flex flex-wrap gap-2 mt-4">
@@ -118,10 +143,10 @@ export function UserCreatePage() {
             className="btn btn-primary"
             onClick={handleSubmit}
             disabled={busy}
-            children={busy ? 'Đang lưu…' : 'Tạo'}
+            children={busy ? t('saving') : t('create')}
           />
           <Link className="btn btn-outline-secondary" to="/users">
-            Hủy
+            {t('cancel')}
           </Link>
         </div>
       </form>

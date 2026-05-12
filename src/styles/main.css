@@ -27,3 +27,60 @@
     color: #0d6efd !important;
     font-weight: 500;
 }
+
+/* Container chính */
+.lang-switch .form-check-input {
+    width: 3.8rem !important; /* Tăng nhẹ độ rộng để chứa chữ thoải mái */
+    height: 1.8rem !important;
+    cursor: pointer;
+    appearance: none;
+    background-color: #ff4757 !important; /* Màu đỏ cho VI */
+    border-radius: 2rem;
+    position: relative;
+    border: none !important;
+    transition: all 0.3s ease;
+}
+
+/* Hình tròn trắng chứa Text */
+.lang-switch .form-check-input::before {
+    content: "VI"; /* Chữ mặc định */
+    position: absolute;
+    width: 1.45rem;
+    height: 1.45rem;
+    background-color: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Căn giữa chữ trong hình tròn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Style cho chữ */
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ff4757; /* Chữ màu đỏ khớp với nền VI */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Khi gạt sang EN (Checked) */
+.lang-switch .form-check-input:checked {
+    background-color: #2f3542 !important; /* Màu tối cho EN */
+}
+
+/* Thay đổi nội dung và vị trí khi Checked */
+.lang-switch .form-check-input:checked::before {
+    content: "EN"; /* Đổi thành chữ EN */
+    color: #2f3542; /* Chữ màu tối khớp với nền EN */
+    left: calc(100% - 1.45rem - 4px);
+}
+
+/* Hiệu ứng nhấn giữ (Active) cho sinh động */
+.lang-switch .form-check-input:active::before {
+    width: 1.7rem; /* Hình tròn hơi dẹt ra khi nhấn giữ */
+    border-radius: 15px;
+}
+
