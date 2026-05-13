@@ -8,6 +8,7 @@ import { UserListPage } from '../pages/user/UserList'
 import { UserCreatePage } from '../pages/user/UserCreate'
 import { UserUpdatePage } from '../pages/user/UserUpdate'
 import { TenantListPage } from '../pages/tenants/TenantList'
+import { TenantDetailPage } from '../pages/tenants/TenantDetail'
 
 
 export const router = createBrowserRouter([
@@ -40,16 +41,34 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: '/users/update/:userId',
-                        element: <UserUpdatePage/>,
+                        element: <UserUpdatePage />,
                     },
                     {
                         path: '/tenants',
                         element: <TenantListPage />,
                     },
-                    // {
-                    //     path: '/tenants/create',
-                    //     element: <TenantCreatePage />,
-                    // },
+                    {
+                        path: '/tenants/detail/:tenantId',
+                        element: <TenantDetailPage />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Navigate to="room" replace />,
+                            },
+                            {
+                                path: 'room',
+                                element: <div>Phòng</div>,
+                            },
+                            {
+                                path: 'history',
+                                element: <div>Lịch sử</div>,
+                            },
+                            {
+                                path: 'invoices',
+                                element: <div>Hoá đơn</div>,
+                            },
+                        ],
+                    },
                     // {
                     //     path: '/tenants/update/:tenantId',
                     //     element: <TenantUpdatePage />,

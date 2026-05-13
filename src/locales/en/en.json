@@ -5,5 +5,28 @@
         "password": "Password",
         "submit": "Login",
         "loading": "Loading..."
+    },
+    "btn": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "update": "Update",
+        "search": "Search",
+        "reset": "Reset",
+        "export": "Export",
+        "saving": "Saving...",
+        "loading": "Loading..."
+    },
+    "messages": {
+        "no_data": "No data.",
+        "total_records": "Total {{total}} records"
+    },
+    "pagination": {
+        "page": "Page",
+        "previous": "Previous",
+        "next": "Next",
+        "total": "Total"
     }
 }

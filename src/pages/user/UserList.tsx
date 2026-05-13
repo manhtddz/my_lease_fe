@@ -8,6 +8,7 @@ import { useUserList } from '../../hooks/user-hooks/useUserList'
 import { useTranslation } from 'react-i18next'
 import { UserStatusEnum } from '../../types/enums/users/UserStatus'
 import type { User } from '../../types/UserType'
+import { deleteUserThunk } from '../../reducers/userSlice'
 
 export function UserListPage() {
   const userListHook = useUserList()
@@ -148,7 +149,10 @@ export function UserListPage() {
         onClose={() =>
           userListHook.modalDeleteConfirm.setIsDeleteModalOpen(false)
         }
-        userId={userListHook.modalDeleteConfirm.deleteId}
+        deleteId={userListHook.modalDeleteConfirm.deleteId}
+        onDelete={async (id) => {
+          await userListHook.dispatch(deleteUserThunk(id))
+        }}
         domainObject="người dùng"
       />
     </>

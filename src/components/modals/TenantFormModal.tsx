@@ -97,13 +97,13 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
             className="btn btn-outline-secondary btn-sm"
             onClick={handleClose}
             disabled={busy}
-            children={t('cancel')}
+            children={t('btn.cancel')}
           />
           <BasicButton
             className="btn btn-primary"
             onClick={handleSubmit}
             disabled={busy}
-            children={busy ? t('saving') : isEditing ? t('update') : t('create')}
+            children={busy ? t('btn.saving') : t('btn.save')}
           />
         </>
       }
@@ -111,7 +111,7 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
       <BasicInput
         id="create-name"
         name="name"
-        label={t('user.name')}
+        label={t('models.tenant.name')}
         autoComplete="name"
         value={formData.name}
         onChange={handleChange}
@@ -122,7 +122,7 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
       <BasicInput
         id="create-phone_number"
         name="phone_number"
-        label={t('tenant.phone_number')}
+        label={t('models.tenant.phone_number')}
         autoComplete="email"
         value={formData.phone_number}
         onChange={handleChange}
@@ -133,7 +133,7 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
       <BasicInput
         id="create-id_card_number"
         name="id_card_number"
-        label={t('tenant.id_card_number')}
+        label={t('models.tenant.id_card_number')}
         autoComplete="id_card_number"
         value={formData.id_card_number}
         onChange={handleChange}

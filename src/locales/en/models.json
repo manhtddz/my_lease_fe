@@ -1,0 +1,7 @@
+{
+    "tenant": {
+        "name": "Name",
+        "phone_number": "Phone Number",
+        "id_card_number": "ID Card Number"
+    }
+}

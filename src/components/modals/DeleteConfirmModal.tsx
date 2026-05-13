@@ -1,29 +1,31 @@
 import { useCallback } from 'react'
 import { Modal } from './Modal'
-import { useAppDispatch } from '../../reducers/hooks'
-import { deleteUserThunk } from '../../reducers/userSlice'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   isOpen: boolean
   onClose: () => void
-  userId: number
+  deleteId: number
   domainObject: string
+  onDelete: (id: number) => Promise<void>
 }
 
 export function DeleteConfirmModal({
   isOpen,
   onClose,
-  userId,
+  deleteId,
   domainObject,
+  onDelete,
 }: Props) {
-  const dispatch = useAppDispatch()
+
+  const { t } = useTranslation()
 
   const handleClose = useCallback(() => {
     onClose()
   }, [onClose])
 
-  const onDelete = async () => {
-    await dispatch(deleteUserThunk(userId))
+  const handleDelete = async () => {
+    await onDelete(deleteId)
     handleClose()
   }
 
@@ -39,16 +41,16 @@ export function DeleteConfirmModal({
             className="btn btn-secondary"
             onClick={handleClose}
           >
-            Huỷ
+            {t('btn.cancel')}
           </button>
-          <button type="button" className="btn btn-danger" onClick={onDelete}>
-            Xóa
+          <button type="button" className="btn btn-danger" onClick={handleDelete}>
+            {t('btn.delete')}
           </button>
         </>
       }
     >
       <p className="mb-0">
-        Xóa đối tượng {domainObject} số {userId} này không?
+        Xóa đối tượng {domainObject} số {deleteId} này không?
       </p>
     </Modal>
   )

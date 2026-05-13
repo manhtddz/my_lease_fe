@@ -5,5 +5,28 @@
         "password": "Mật khẩu",
         "submit": "Đăng nhập",
         "loading": "Đang đăng nhập..."
+    },
+    "btn": {
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "delete": "Xóa",
+        "edit": "Sửa",
+        "create": "Tạo",
+        "update": "Cập nhật",
+        "search": "Tìm kiếm",
+        "reset": "Làm mới",
+        "export": "Xuất",
+        "saving": "Đang lưu...",
+        "loading": "Đang tải..."
+    },
+    "messages": {
+        "no_data": "Chưa có dữ liệu.",
+        "total_records": "Tổng {{total}} bản ghi"
+    },
+    "pagination": {
+        "page": "Trang",
+        "previous": "Trước",
+        "next": "Sau",
+        "total": "Tổng"
     }
 }

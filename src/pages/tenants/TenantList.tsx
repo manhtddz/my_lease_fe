@@ -7,17 +7,22 @@ import type { Tenant } from '../../types/TenantType'
 import { TenantSearchForm } from '../../components/search-forms/TenantSearchForm'
 import { TenantFormModal } from '../../components/modals/TenantFormModal'
 import { useTenantModalForm } from '../../hooks/tenant-hooks/useTenantModalForm'
+import { useTranslation } from 'react-i18next'
+import { deleteTenantThunk } from '../../reducers/tenantSlice'
+import { Link } from 'react-router-dom'
 
 export function TenantListPage() {
   const tenantListHook = useTenantList()
   const tenantModalForm = useTenantModalForm()
+  const { t } = useTranslation()
+
   return (
     <>
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
         <div>
           <h1 className="h3 mb-1">Khách hàng</h1>
           <p className="text-body-secondary small mb-0">
-            Tổng {tenantListHook.total} bản ghi
+            {t('messages.total_records', { total: tenantListHook.total })}
           </p>
         </div>
         <BasicButton
@@ -28,7 +33,7 @@ export function TenantListPage() {
             tenantModalForm.isModalOpen
           }
           className="btn btn-primary"
-        >Thêm mới</BasicButton>
+        >{t('btn.create')}</BasicButton>
         {/* <Link className="btn btn-primary" to="/users/create">
           Thêm mới
         </Link> */}
@@ -67,13 +72,13 @@ export function TenantListPage() {
                     ? '▲ '
                     : '▼ '
                   : '↕ '}
-                Tên
+                {t('models.tenant.name')}
               </th>
               <th role="button" className="user-select-none">
-                Số điện thoại
+                {t('models.tenant.phone_number')}
               </th>
               <th role="button" className="user-select-none">
-                Số CMND/CCCD
+                {t('models.tenant.id_card_number')}
               </th>
               <th style={{ width: 180 }} />
             </tr>
@@ -82,13 +87,13 @@ export function TenantListPage() {
             {tenantListHook.showLoadingPlaceholder ? (
               <tr>
                 <td colSpan={4} className="text-center py-5 text-body-secondary">
-                  Đang tải…
+                  {t('btn.loading')}
                 </td>
               </tr>
             ) : tenantListHook.list.length === 0 ? (
               <tr>
                 <td colSpan={4} className="text-center py-5 text-body-secondary">
-                  Chưa có dữ liệu.
+                  {t('messages.no_data')}
                 </td>
               </tr>
             ) : (
@@ -99,12 +104,12 @@ export function TenantListPage() {
                   <td>{u.phone_number}</td>
                   <td>{u.id_card_number}</td>
                   <td className="text-end text-nowrap">
-                    {/* <Link
+                    <Link
                       className="btn btn-outline-secondary btn-sm me-2"
-                      to={`/tenants/update/${u.id}`}
+                      to={`/tenants/detail/${u.id}`}
                     >
-                      Sửa
-                    </Link> */}
+                      {t('btn.detail')}
+                    </Link>
 
                     <BasicButton
                       onClick={() => { void tenantModalForm.openEditModal(u.id) }}
@@ -115,7 +120,7 @@ export function TenantListPage() {
                       }
                       className="btn btn-outline-secondary btn-sm me-2"
                     >
-                      Sửa
+                      {t('btn.edit')}
                     </BasicButton>
 
                     <BasicButton
@@ -128,7 +133,7 @@ export function TenantListPage() {
                       }
                       className="btn btn-outline-danger btn-sm"
                     >
-                      Xóa
+                      {t('btn.delete')}
                     </BasicButton>
                   </td>
                 </tr>
@@ -151,8 +156,11 @@ export function TenantListPage() {
         onClose={() =>
           tenantListHook.modalDeleteConfirm.setIsDeleteModalOpen(false)
         }
-        userId={tenantListHook.modalDeleteConfirm.deleteId}
+        deleteId={tenantListHook.modalDeleteConfirm.deleteId}
         domainObject="tenant"
+        onDelete={async (id) => {
+          await tenantListHook.dispatch(deleteTenantThunk(id))
+        }}
       />
 
       <TenantFormModal

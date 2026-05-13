@@ -107,5 +107,6 @@ export function useBaseList<
         handleSort,
         handleSubmit,
         modalDeleteConfirm,
+        dispatch
     }
 }

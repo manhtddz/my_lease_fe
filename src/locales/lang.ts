@@ -7,6 +7,8 @@ import translationValidationEN from './en/validation.json';
 import translationValidationVI from './vi/validation.json';
 import translationEnumsEN from './en/enums.json';
 import translationEnumsVI from './vi/enums.json';
+import translationModelsEN from './en/models.json';
+import translationModelsVI from './vi/models.json';
 
 export const lang = i18n
     .use(LanguageDetector)
@@ -17,14 +19,16 @@ export const lang = i18n
                 translation: {
                     ...translationEN,
                     validation: translationValidationEN,
-                    enums: translationEnumsEN
+                    enums: translationEnumsEN,
+                    models: translationModelsEN
                 }
             },
             vi: {
                 translation: {
                     ...translationVI,
                     validation: translationValidationVI,
-                    enums: translationEnumsVI
+                    enums: translationEnumsVI,
+                    models: translationModelsVI
                 }
             }
         },

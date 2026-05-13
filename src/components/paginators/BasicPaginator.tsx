@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
 
 type Props = {
@@ -16,6 +17,7 @@ export function BasicPaginator({
   setPageIndex,
 }: Props) {
   const loading = status === PageLoadStatus.LOADING
+  const { t } = useTranslation()
 
   return (
     <div className="d-flex align-items-center justify-content-end gap-2 gap-md-3 mt-3 small text-body-secondary">
@@ -27,10 +29,10 @@ export function BasicPaginator({
         }
         onClick={() => setPageIndex(effectivePage - 1)}
       >
-        Trước
+        {t('pagination.previous')}
       </button>
       <span>
-        Trang {effectivePage + 1} / {pageCount}
+        {t('pagination.page')} {effectivePage + 1} / {t('pagination.total')} {pageCount}
       </span>
       <button
         type="button"
@@ -42,7 +44,7 @@ export function BasicPaginator({
         }
         onClick={() => setPageIndex(effectivePage + 1)}
       >
-        Sau
+        {t('pagination.next')}
       </button>
     </div>
   )

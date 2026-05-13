@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { TenantSearchForm } from "../../types/TenantType";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSearch: (searchForm: TenantSearchForm) => void;
@@ -11,6 +12,7 @@ const INITIAL_FORM: TenantSearchForm = {
 };
 
 export function TenantSearchForm({ onSearch }: Props) {
+  const { t } = useTranslation();
   const [searchForm, setSearchForm] = useState<TenantSearchForm>(INITIAL_FORM);
 
   const handleSubmit = () => {
@@ -26,7 +28,7 @@ export function TenantSearchForm({ onSearch }: Props) {
     <div className="row g-2 align-items-end mb-4">
       <div className="col-md-4">
         <label className="form-label small mb-1" htmlFor="search-name">
-          Tên
+          {t('models.tenant.name')}
         </label>
         <input
           id="search-name"
@@ -42,7 +44,7 @@ export function TenantSearchForm({ onSearch }: Props) {
 
       <div className="col-md-4">
         <label className="form-label small mb-1" htmlFor="search-phone_number">
-          Số điện thoại
+          {t('models.tenant.phone_number')}
         </label>
         <input
           id="search-phone_number"
@@ -58,14 +60,14 @@ export function TenantSearchForm({ onSearch }: Props) {
 
       <div className="col-md-auto d-flex gap-2">
         <button type="button" className="btn btn-outline-primary btn-sm" onClick={handleSubmit}>
-          Tìm kiếm
+          {t('btn.search')}
         </button>
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm"
           onClick={handleReset}
         >
-          Xóa bộ lọc
+          {t('btn.reset')}
         </button>
       </div>
     </div>
