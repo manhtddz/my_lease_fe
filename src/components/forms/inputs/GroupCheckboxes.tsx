@@ -9,8 +9,8 @@ type Props = {
   className?: string
   name?: string
   validationErrors?: Record<string, string[]>
-  label?: string
   showError?: boolean
+  width?: string
   onChange: (value: (string | number)[]) => void
 }
 
@@ -23,6 +23,7 @@ export function GroupCheckboxes({
   validationErrors = {},
   showError = false,
   onChange,
+  width = '100%',
 }: Props) {
   const errorMessage = name ? validationErrors?.[name]?.[0] : null
 
@@ -35,30 +36,34 @@ export function GroupCheckboxes({
   }
 
   return (
-    <div className={className}>
-      {options.map((opt) => {
-        const inputId = `${name}-cb-${opt.value}`.replace(/\s+/g, '-')
-        return (
-          <div key={String(opt.value)} className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id={inputId}
-              name={name}
-              value={String(opt.value)}
-              checked={selectedValues.includes(opt.value)}
-              onChange={() => handleCheckboxChange(opt.value)}
-              disabled={disabled || opt.selfDisabled}
-            />
-            <label className="form-check-label" htmlFor={inputId}>
-              {opt.label}
-            </label>
-          </div>
-        )
-      })}
-      {showError && errorMessage ? (
-        <div className="invalid-feedback d-block">{errorMessage}</div>
-      ) : null}
-    </div>
+    <>
+      <div className={className} role="group" style={{ width: width }}>
+        {options.map((opt) => {
+          const inputId = `${name}-cb-${opt.value}`.replace(/\s+/g, '-')
+          return (
+            <>
+              <input
+                key={String(opt.value)}
+                type="checkbox"
+                className="btn-check"
+                id={inputId}
+                name={name}
+                value={String(opt.value)}
+                checked={selectedValues.includes(opt.value)}
+                onChange={() => handleCheckboxChange(opt.value)}
+                disabled={disabled || opt.selfDisabled}
+                autoComplete="off"
+              />
+              <label className="btn btn-outline-secondary" htmlFor={inputId}>
+                {opt.label}
+              </label>
+            </>
+          )
+        })}
+        {showError && errorMessage ? (
+          <div className="invalid-feedback d-block">{errorMessage}</div>
+        ) : null}
+      </div>
+    </>
   )
 }

@@ -4,5 +4,20 @@
             "1": "Active",
             "0": "Inactive"
         }
+    },
+    "room": {
+        "room_type": {
+            "1": "Single",
+            "2": "Double",
+            "3": "Triple",
+            "4": "Quadruple",
+            "5": "Family"
+        },
+        "status": {
+            "0": "Available",
+            "1": "Partially Occupied",
+            "2": "Fully Occupied",
+            "3": "Reserved"
+        }
     }
 }

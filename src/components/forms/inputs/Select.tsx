@@ -48,8 +48,8 @@ export function Select(props: Props) {
   const dynamicHeight = Math.min(filteredOptions.length * ITEM_HEIGHT, MAX_HEIGHT);
 
   return (
-    <div className="custom-select-container w-100">
-      {props.label && <label className="form-label fw-semibold mb-1" style={{ fontSize: '14px' }}>{props.label}</label>}
+    <div className="custom-select-container w-100 mb-3">
+      {props.label && <label className="form-label">{props.label}</label>}
 
       <div className="position-relative">
         <div

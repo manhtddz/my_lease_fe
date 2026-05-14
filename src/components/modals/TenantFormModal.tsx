@@ -43,7 +43,7 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
 
   const translatedServerErrors = useMemo(() => {
     if (!serverValidationErrors) return {};
-    return extractValidationServerErrors(serverValidationErrors, t);
+    return extractValidationServerErrors(serverValidationErrors, t, 'tenant');
   }, [serverValidationErrors, t]);
 
   const displayErrors = {
@@ -67,19 +67,21 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
   const handleSubmit = async () => {
     setClientErrors({});
     dispatch(clearTenantsError());
-    const result = tenantSchema.safeParse(formData)
+    const result = tenantSchema(t).safeParse(formData)
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
+      const formattedErrors = extractValidationErrors(result.error);
       setClientErrors(formattedErrors);
       return
     }
+    const data = result.data
     if (isEditing) {
-      const updateResult = await dispatch(updateTenantThunk({ ...formData, id: editingId }))
+      if (editingId === undefined) return
+      const updateResult = await dispatch(updateTenantThunk({ ...data, id: editingId }))
       if (updateTenantThunk.fulfilled.match(updateResult)) {
         handleClose()
       }
     } else {
-      const createResult = await dispatch(createTenantThunk(formData))
+      const createResult = await dispatch(createTenantThunk(data))
       if (createTenantThunk.fulfilled.match(createResult)) {
         handleClose()
       }

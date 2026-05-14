@@ -25,20 +25,20 @@ export function BasicPaginator({
         type="button"
         className="btn btn-outline-secondary btn-sm"
         disabled={
-          effectivePage <= 0 || loading || showLoadingPlaceholder
+          effectivePage <= 1 || loading || showLoadingPlaceholder
         }
         onClick={() => setPageIndex(effectivePage - 1)}
       >
         {t('pagination.previous')}
       </button>
       <span>
-        {t('pagination.page')} {effectivePage + 1} / {t('pagination.total')} {pageCount}
+        {t('pagination.page')} {effectivePage} / {t('pagination.total')} {pageCount}
       </span>
       <button
         type="button"
         className="btn btn-outline-secondary btn-sm"
         disabled={
-          effectivePage >= pageCount - 1 ||
+          effectivePage >= pageCount ||
           loading ||
           showLoadingPlaceholder
         }

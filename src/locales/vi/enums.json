@@ -4,5 +4,20 @@
             "1": "Hoạt động",
             "0": "Không hoạt động"
         }
+    },
+    "room": {
+        "room_type": {
+            "1": "Phòng đơn",
+            "2": "Phòng đôi",
+            "3": "Phòng ba",
+            "4": "Phòng tư",
+            "5": "Phòng gia đình"
+        },
+        "status": {
+            "0": "Còn trống",
+            "1": "Có người ở",
+            "2": "Đủ người ở",
+            "3": "Bảo trì"
+        }
     }
 }

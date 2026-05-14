@@ -11,6 +11,7 @@ const NAV_ITEMS: NavItem[] = [
     { to: '/', end: true, icon: 'bi-speedometer2', label: 'Tổng quan' },
     { to: '/users', icon: 'bi-people', label: 'Người dùng' },
     { to: '/tenants', icon: 'bi-person-vcard', label: 'Khách hàng' },
+    { to: '/rooms', icon: 'bi-house-fill', label: 'Phòng' },
 ]
 
 interface SidebarProps {

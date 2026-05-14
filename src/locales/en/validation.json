@@ -26,5 +26,11 @@
             "required": "Status is required",
             "invalid": "Invalid status"
         }
-    }
+    },
+    "required": "{{field}} is required",
+    "unique": "{{field}} already exists",
+    "invalid": "{{field}} is invalid",
+    "min": "{{field}} must be at least {{length}} characters long",
+    "min_value": "{{field}} must be greater than {{min}}",
+    "in": "{{field}} must be one of the following: {{values}}"
 }

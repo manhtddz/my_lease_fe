@@ -1,13 +1,19 @@
 import axios from 'axios';
 
 export const axiosInstance = axios.create({
-    baseURL: 'https://yourdomain.com', // Real URL goes here later
-    headers: { 'Content-Type': 'application/json' }
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api',
+  headers: { 'Content-Type': 'application/json' }
 });
+
 
 // Response Interceptor: Global Error Handling
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data?.data !== undefined) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   (error) => {
     if (error.response) {
       const { status } = error.response;

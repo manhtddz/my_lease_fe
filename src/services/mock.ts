@@ -92,10 +92,10 @@ mock.onGet('/tenants').reply((config) => {
 
     const name = params?.name?.trim().toLowerCase() ?? ''
     const phone_number = params?.phone_number?.trim() ?? ''
-    const sortBy = params?.sortBy ?? 'id'
-    const sortDir = params?.sortDir ?? 'asc'
-    const pageIndex = Math.max(params?.pageIndex ?? 0, 0)
-    const pageSize = Math.max(params?.pageSize ?? 5, 1)
+    const sortBy = params?.sort_by ?? 'id'
+    const sortDir = params?.sort_dir ?? 'asc'
+    const pageIndex = Math.max(params?.page ?? 0, 0)
+    const pageSize = Math.max(params?.size ?? 5, 1)
 
     const filtered = tenantMockUtils.INITIAL_TENANTS.filter(t =>
         (name ? t.name.toLowerCase().includes(name) : true) &&

@@ -1,11 +1,11 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit'
 import { createApiThunk } from '../utils/thunks'
 import { PageLoadStatus, type PageLoadStatusType } from '../types/enums/PageLoadStatus'
-import type { Tenant, TenantDataListParams, TenantDataListResult } from '../types/TenantType'
-import { tenantApi } from '../services/tenant'
+import type { Room, RoomDataListParams, RoomDataListResult } from '../types/RoomType'
+import { roomApi } from '../services/room'
 
-type TenantsState = {
-  list: Tenant[]
+type RoomsState = {
+  list: Room[]
   total: number
   status: PageLoadStatusType
   error: string | null
@@ -14,7 +14,7 @@ type TenantsState = {
   refetchSignal: number
 }
 
-const initialState: TenantsState = {
+const initialState: RoomsState = {
   list: [],
   total: 0,
   status: PageLoadStatus.IDLE,
@@ -24,51 +24,51 @@ const initialState: TenantsState = {
   refetchSignal: 0,
 }
 
-export const fetchTenantsThunk = createApiThunk(
-  'tenants/fetchAll',
-  async (params: TenantDataListParams | undefined, getState): Promise<TenantDataListResult> => {
+export const fetchRoomsThunk = createApiThunk(
+  'rooms/fetchAll',
+  async (params: RoomDataListParams | undefined, getState): Promise<RoomDataListResult> => {
     void getState
-    return tenantApi.getTenantDataList(params)
+    return roomApi.getRoomDataList(params)
   },
 )
 
-export const fetchTenantByIdThunk = createApiThunk(
-  'tenants/fetchById',
-  async (id: number, getState): Promise<Tenant> => {
+export const fetchRoomByIdThunk = createApiThunk(
+  'rooms/fetchById',
+  async (id: number, getState): Promise<Room> => {
     void getState
-    return tenantApi.getTenantById(id)
+    return roomApi.getRoomById(id)
   },
 )
 
-export const createTenantThunk = createApiThunk(
-  'tenants/createTenant',
-  async (payload: Omit<Tenant, 'id'>, getState) => {
+export const createRoomThunk = createApiThunk(
+  'rooms/createRoom',
+  async (payload: Omit<Room, 'id'>, getState) => {
     void getState
-    return tenantApi.createTenant(payload)
+    return roomApi.createRoom(payload)
   },
 )
 
-export const updateTenantThunk = createApiThunk(
-  'tenants/updateTenant',
-  async (payload: Tenant, getState) => {
+export const updateRoomThunk = createApiThunk(
+  'rooms/updateRoom',
+  async (payload: Room, getState) => {
     void getState
-    return tenantApi.updateTenant(payload.id, payload)
+    return roomApi.updateRoom(payload.id, payload)
   },
 )
 
-export const deleteTenantThunk = createApiThunk(
-  'tenants/deleteTenant',
+export const deleteRoomThunk = createApiThunk(
+  'rooms/deleteRoom',
   async (id: number, getState) => {
     void getState
-    return tenantApi.deleteTenantById(id)
+    return roomApi.deleteRoomById(id)
   },
 )
 
-const tenantsSlice = createSlice({
-  name: 'tenants',
+const roomsSlice = createSlice({
+  name: 'rooms',
   initialState,
   reducers: {
-    clearTenantsError: (state) => {
+    clearRoomsError: (state) => {
       state.status = PageLoadStatus.IDLE;
       state.error = null;
       state.errorCode = null;
@@ -77,7 +77,7 @@ const tenantsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTenantsThunk.fulfilled, (state, action) => {
+      .addCase(fetchRoomsThunk.fulfilled, (state, action) => {
         state.list = action.payload.data
         state.total = action.payload.total
         state.error = null;
@@ -85,31 +85,31 @@ const tenantsSlice = createSlice({
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
       })
-      .addCase(createTenantThunk.fulfilled, (state) => {
+      .addCase(createRoomThunk.fulfilled, (state) => {
         state.error = null;
         state.errorCode = null;
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
         state.refetchSignal += 1
       })
-      .addCase(updateTenantThunk.fulfilled, (state) => {
+      .addCase(updateRoomThunk.fulfilled, (state) => {
         state.error = null;
         state.errorCode = null;
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
         state.refetchSignal += 1
       })
-      .addCase(deleteTenantThunk.fulfilled, (state) => {
+      .addCase(deleteRoomThunk.fulfilled, (state) => {
         state.refetchSignal += 1;
         state.status = PageLoadStatus.SUCCEEDED;
       })
 
       .addMatcher(
         isAnyOf(
-          fetchTenantsThunk.pending,
-          createTenantThunk.pending,
-          updateTenantThunk.pending,
-          deleteTenantThunk.pending,
+          fetchRoomsThunk.pending,
+          createRoomThunk.pending,
+          updateRoomThunk.pending,
+          deleteRoomThunk.pending,
         ),
         (state) => {
           state.status = PageLoadStatus.LOADING;
@@ -122,10 +122,10 @@ const tenantsSlice = createSlice({
       // ── rejected — tất cả giống nhau → gom vào 1 matcher ──
       .addMatcher(
         isAnyOf(
-          fetchTenantsThunk.rejected,
-          createTenantThunk.rejected,
-          updateTenantThunk.rejected,
-          deleteTenantThunk.rejected,
+          fetchRoomsThunk.rejected,
+          createRoomThunk.rejected,
+          updateRoomThunk.rejected,
+          deleteRoomThunk.rejected,
         ),
         (state, action) => {
           state.status = PageLoadStatus.FAILED;
@@ -169,5 +169,5 @@ const tenantsSlice = createSlice({
       )
   },
 })
-export const { clearTenantsError } = tenantsSlice.actions
-export const tenantsReducer = tenantsSlice.reducer
+export const { clearRoomsError } = roomsSlice.actions
+export const roomsReducer = roomsSlice.reducer

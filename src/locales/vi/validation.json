@@ -26,5 +26,11 @@
             "required": "Trạng thái không được để trống",
             "invalid": "Trạng thái không hợp lệ"
         }
-    }
+    },
+    "required": "{{field}} không được để trống",
+    "unique": "{{field}} đã tồn tại",
+    "invalid": "{{field}} không hợp lệ",
+    "min": "{{field}} phải có ít nhất {{length}} ký tự",
+    "min_value": "{{field}} phải lớn hơn {{min}}",
+    "in": "{{field}} phải là một trong các giá trị sau: {{values}}"
 }

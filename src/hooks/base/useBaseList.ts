@@ -5,7 +5,7 @@ import { useModalDeleteConfirm } from "../modal-hooks/useModalDeleteConfirm"
 import type { RootState } from "../../reducers/index"
 import type { AsyncThunk } from "@reduxjs/toolkit"
 
-const DEFAULT_PAGE_SIZE = 8
+const DEFAULT_PAGE_SIZE = import.meta.env.VITE_DEFAULT_PAGE_SIZE
 
 type SliceState<T> = {
     list: T[]
@@ -16,7 +16,7 @@ type SliceState<T> = {
 }
 
 type BaseListParams = {
-    pageIndex?: number
+    page?: number
     pageSize?: number
     sortBy?: string | null
     sortDir?: 'asc' | 'desc' | null
@@ -45,17 +45,17 @@ export function useBaseList<
 
     const { list, total, error, status, refetchSignal } = useAppSelector(selectSlice)
 
-    const [pageIndex, setPageIndex] = useState(0)
+    const [page, setPage] = useState(1)
     const [sortBy, setSortBy] = useState<string | null>(null)
     const [sortDir, setSortDir] = useState<'asc' | 'desc' | null>(null)
     const [searchForm, setSearchForm] = useState<TSearchForm>(initialSearchForm)
 
     const pageCount = Math.max(1, Math.ceil(total / pageSize))
-    const effectivePage = Math.min(pageIndex, pageCount - 1)
+    const effectivePage = Math.min(Math.max(1, page), pageCount)
 
     const fetchParams = useMemo<TParams>(() => {
         return buildParams(
-            { pageIndex: effectivePage, pageSize, sortBy, sortDir },
+            { page: effectivePage, pageSize, sortBy, sortDir },
             searchForm,
         )
     }, [effectivePage, pageSize, sortBy, sortDir, searchForm])
@@ -90,7 +90,7 @@ export function useBaseList<
             ]),
         ) as TSearchForm
         setSearchForm(trimmed)
-        setPageIndex(0)
+        setPage(1)
     }
 
     return {
@@ -103,7 +103,7 @@ export function useBaseList<
         sortBy,
         sortDir,
         showLoadingPlaceholder,
-        setPageIndex,
+        setPage,
         handleSort,
         handleSubmit,
         modalDeleteConfirm,

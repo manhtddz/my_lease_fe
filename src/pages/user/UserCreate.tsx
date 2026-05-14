@@ -50,7 +50,7 @@ export function UserCreatePage() {
 
     const result = userSchema.safeParse(formData);
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
+      const formattedErrors = extractValidationErrors(result.error);
       setClientErrors(formattedErrors);
       return;
     }

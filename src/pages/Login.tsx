@@ -42,7 +42,7 @@ export function LoginPage() {
     const result = loginSchema.safeParse(formData);
 
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
+      const formattedErrors = extractValidationErrors(result.error);
 
       setLocalErrors(formattedErrors);
       return;

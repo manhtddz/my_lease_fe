@@ -3,5 +3,13 @@
         "name": "Name",
         "phone_number": "Phone Number",
         "id_card_number": "ID Card Number"
+    },
+    "room": {
+        "room_number": "Room Number",
+        "floor": "Floor",
+        "room_type": "Room Type",
+        "room_price": "Room Price",
+        "max_occupants": "Max Occupants",
+        "status": "Status"
     }
 }

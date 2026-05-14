@@ -17,7 +17,8 @@
         "reset": "Làm mới",
         "export": "Xuất",
         "saving": "Đang lưu...",
-        "loading": "Đang tải..."
+        "loading": "Đang tải...",
+        "detail": "Chi tiết"
     },
     "messages": {
         "no_data": "Chưa có dữ liệu.",
@@ -28,5 +29,10 @@
         "previous": "Trước",
         "next": "Sau",
         "total": "Tổng"
+    },
+    "tables": {
+        "table_header": {
+            "action": "Hành động"
+        }
     }
 }

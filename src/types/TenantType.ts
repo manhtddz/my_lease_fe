@@ -8,17 +8,17 @@ export type Tenant = {
 export type TenantDataListParams = {
     name?: string
     phone_number?: string
-    sortBy?: 'id' | 'name'
-    sortDir?: 'asc' | 'desc'
-    pageIndex?: number
-    pageSize?: number
+    sort_by?: 'id' | 'name'
+    sort_dir?: 'asc' | 'desc'
+    page?: number
+    size?: number
 }
 
 export type TenantDataListResult = {
-    items: Tenant[]
+    data: Tenant[]
     total: number
-    pageIndex: number
-    pageSize: number
+    current_page: number
+    per_page: number
 }
 
 export type TenantSearchForm = {

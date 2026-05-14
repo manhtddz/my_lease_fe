@@ -80,19 +80,21 @@ export function TenantListPage() {
               <th role="button" className="user-select-none">
                 {t('models.tenant.id_card_number')}
               </th>
-              <th style={{ width: 180 }} />
+              <th role="button" className="user-select-none">
+                {t('tables.table_header.action')}
+              </th>
             </tr>
           </thead>
           <tbody>
             {tenantListHook.showLoadingPlaceholder ? (
               <tr>
-                <td colSpan={4} className="text-center py-5 text-body-secondary">
+                <td colSpan={5} className="text-center py-5 text-body-secondary">
                   {t('btn.loading')}
                 </td>
               </tr>
             ) : tenantListHook.list.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-5 text-body-secondary">
+                <td colSpan={5} className="text-center py-5 text-body-secondary">
                   {t('messages.no_data')}
                 </td>
               </tr>
@@ -103,7 +105,7 @@ export function TenantListPage() {
                   <td>{u.name}</td>
                   <td>{u.phone_number}</td>
                   <td>{u.id_card_number}</td>
-                  <td className="text-end text-nowrap">
+                  <td className="text-nowrap">
                     <Link
                       className="btn btn-outline-secondary btn-sm me-2"
                       to={`/tenants/detail/${u.id}`}
@@ -148,7 +150,7 @@ export function TenantListPage() {
         pageCount={tenantListHook.pageCount}
         status={tenantListHook.status}
         showLoadingPlaceholder={tenantListHook.showLoadingPlaceholder}
-        setPageIndex={tenantListHook.setPageIndex}
+        setPageIndex={tenantListHook.setPage}
       />
 
       <DeleteConfirmModal

@@ -1,8 +1,7 @@
-import { useTranslation } from 'react-i18next'
-import { useTenantList } from '../../hooks/tenant-hooks/useTenantList'
-import { useTenantModalForm } from '../../hooks/tenant-hooks/useTenantModalForm'
-import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
+import { fetchTenantByIdThunk } from '../../reducers/tenantDetailSlice'
 
 const TABS = [
   { to: 'room', icon: 'ti-door', label: 'Phòng' },
@@ -11,13 +10,17 @@ const TABS = [
 ]
 
 export function TenantDetailPage() {
-  const tenantListHook = useTenantList()
-  const tenantModalForm = useTenantModalForm()
-  const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState<string>('room')
+  const { tenant, error, refetchSignal } = useAppSelector((state) => state.tenantDetail)
+
+  const params = useParams()
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    dispatch(fetchTenantByIdThunk(parseInt(params.tenantId)))
+  }, [refetchSignal, dispatch, params.tenantId])
 
   return (
     <>
+      {error && <div className="alert alert-danger">{error}</div>}
       <div className="d-flex align-items-center justify-content-between px-3 py-3 bg-body-tertiary border-bottom">
         <div className="d-flex align-items-center gap-3">
           {/* Avatar */}
@@ -31,7 +34,7 @@ export function TenantDetailPage() {
           {/* Tên + meta */}
           <div>
             <h2 className="h6 fw-medium mb-1 d-flex align-items-center gap-2">
-              Nguyễn Văn An
+              {tenant?.name}
               <span className="badge rounded-pill bg-success-subtle text-success-emphasis fw-normal" style={{ fontSize: 11 }}>
                 <i className="ti ti-circle-check me-1" aria-hidden="true" />
                 Đang thuê
@@ -40,11 +43,11 @@ export function TenantDetailPage() {
             <div className="d-flex gap-3">
               <span className="text-secondary small d-flex align-items-center gap-1">
                 <i className="ti ti-phone" style={{ fontSize: 13 }} aria-hidden="true" />
-                0912 345 678
+                {tenant?.phone_number}
               </span>
               <span className="text-secondary small d-flex align-items-center gap-1">
                 <i className="ti ti-mail" style={{ fontSize: 13 }} aria-hidden="true" />
-                an.nguyen@gmail.com
+                {tenant?.id_card_number}
               </span>
             </div>
           </div>

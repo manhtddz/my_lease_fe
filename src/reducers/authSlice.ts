@@ -12,7 +12,7 @@ export type AuthState = {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  isAuthenticated: true,
   currentUser: null,
   error: null,
   errorCode: null,

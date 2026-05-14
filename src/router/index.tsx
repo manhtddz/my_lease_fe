@@ -9,6 +9,7 @@ import { UserCreatePage } from '../pages/user/UserCreate'
 import { UserUpdatePage } from '../pages/user/UserUpdate'
 import { TenantListPage } from '../pages/tenants/TenantList'
 import { TenantDetailPage } from '../pages/tenants/TenantDetail'
+import { RoomListPage } from '../pages/rooms/RoomList'
 
 
 export const router = createBrowserRouter([
@@ -69,10 +70,10 @@ export const router = createBrowserRouter([
                             },
                         ],
                     },
-                    // {
-                    //     path: '/tenants/update/:tenantId',
-                    //     element: <TenantUpdatePage />,
-                    // },
+                    {
+                        path: '/rooms',
+                        element: <RoomListPage />,
+                    },
                 ],
             },
         ],

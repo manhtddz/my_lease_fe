@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 type Props = {
@@ -9,6 +10,9 @@ type Props = {
 }
 
 export function Modal({ isOpen, title, onClose, children, footer }: Props) {
+  // Track whether the mousedown started inside the modal dialog
+  const mouseDownInsideDialog = useRef(false)
+
   if (!isOpen) return null
 
   return createPortal(
@@ -19,11 +23,24 @@ export function Modal({ isOpen, title, onClose, children, footer }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="dw-modal-title"
-        onClick={onClose}
+        onMouseDown={() => {
+          mouseDownInsideDialog.current = false
+        }}
+        onMouseUp={() => {
+          if (!mouseDownInsideDialog.current) {
+            onClose()
+          }
+        }}
       >
         <div
           className="modal-dialog modal-dialog-centered"
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => {
+            e.stopPropagation()
+            mouseDownInsideDialog.current = true
+          }}
+          onMouseUp={(e) => {
+            e.stopPropagation()
+          }}
         >
           <div className="modal-content">
             <div className="modal-header">
