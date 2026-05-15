@@ -11,5 +11,12 @@
         "room_price": "Room Price",
         "max_occupants": "Max Occupants",
         "status": "Status"
+    },
+    "tenant_room_history": {
+        "move_in_date": "Move In Date",
+        "move_out_date": "Move Out Date",
+        "is_representative": "Is Representative",
+        "room_price_snapshot": "Room Price Snapshot",
+        "note": "Note"
     }
 }

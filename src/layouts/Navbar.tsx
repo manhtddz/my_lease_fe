@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../reducers/hooks'
 import { useTranslation } from 'react-i18next'
-import { logout } from '../reducers/authSlice'
+import { logout } from '../reducers/auth/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { Checkbox } from '../components/forms/inputs/Checkbox'
 

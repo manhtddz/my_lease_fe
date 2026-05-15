@@ -1,11 +1,11 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit'
-import type { User, UserDataListParams, UserDataListResult } from '../types/UserType'
-import { userApi } from '../services/user'
-import { createApiThunk } from '../utils/thunks'
-import { PageLoadStatus, type PageLoadStatusType } from '../types/enums/PageLoadStatus'
+import { createApiThunk } from '../../utils/thunks'
+import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
+import type { Room, RoomDataListParams, RoomDataListResult } from '../../types/RoomType'
+import { roomApi } from '../../services/room'
 
-type UsersState = {
-  list: User[]
+type RoomsState = {
+  list: Room[]
   total: number
   status: PageLoadStatusType
   error: string | null
@@ -14,7 +14,7 @@ type UsersState = {
   refetchSignal: number
 }
 
-const initialState: UsersState = {
+const initialState: RoomsState = {
   list: [],
   total: 0,
   status: PageLoadStatus.IDLE,
@@ -24,51 +24,44 @@ const initialState: UsersState = {
   refetchSignal: 0,
 }
 
-export const fetchUsersThunk = createApiThunk(
-  'users/fetchAll',
-  async (params: UserDataListParams | undefined, getState): Promise<UserDataListResult> => {
+export const fetchRoomsThunk = createApiThunk(
+  'rooms/fetchAll',
+  async (params: RoomDataListParams | undefined, getState): Promise<RoomDataListResult> => {
     void getState
-    return userApi.getUserDataList(params)
+    return roomApi.getRoomDataList(params)
   },
 )
 
-export const fetchUserByIdThunk = createApiThunk(
-  'users/fetchById',
-  async (id: number, getState): Promise<User> => {
+
+export const createRoomThunk = createApiThunk(
+  'rooms/createRoom',
+  async (payload: Omit<Room, 'id'>, getState) => {
     void getState
-    return userApi.getUserById(id)
+    return roomApi.createRoom(payload)
   },
 )
 
-export const createUserThunk = createApiThunk(
-  'users/createUser',
-  async (payload: Omit<User, 'id'>, getState) => {
+export const updateRoomThunk = createApiThunk(
+  'rooms/updateRoom',
+  async (payload: Room, getState) => {
     void getState
-    return userApi.createUser(payload)
+    return roomApi.updateRoom(payload.id, payload)
   },
 )
 
-export const updateUserThunk = createApiThunk(
-  'users/updateUser',
-  async (payload: User, getState) => {
-    void getState
-    return userApi.updateUser(payload.id, payload)
-  },
-)
-
-export const deleteUserThunk = createApiThunk(
-  'users/deleteUser',
+export const deleteRoomThunk = createApiThunk(
+  'rooms/deleteRoom',
   async (id: number, getState) => {
     void getState
-    return userApi.deleteUserById(id)
+    return roomApi.deleteRoomById(id)
   },
 )
 
-const usersSlice = createSlice({
-  name: 'users',
+const roomsSlice = createSlice({
+  name: 'rooms',
   initialState,
   reducers: {
-    clearUsersError: (state) => {
+    clearRoomsError: (state) => {
       state.status = PageLoadStatus.IDLE;
       state.error = null;
       state.errorCode = null;
@@ -77,39 +70,39 @@ const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsersThunk.fulfilled, (state, action) => {
-        state.list = action.payload.items
+      .addCase(fetchRoomsThunk.fulfilled, (state, action) => {
+        state.list = action.payload.data
         state.total = action.payload.total
         state.error = null;
         state.errorCode = null;
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
       })
-      .addCase(createUserThunk.fulfilled, (state) => {
+      .addCase(createRoomThunk.fulfilled, (state) => {
         state.error = null;
         state.errorCode = null;
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
         state.refetchSignal += 1
       })
-      .addCase(updateUserThunk.fulfilled, (state) => {
+      .addCase(updateRoomThunk.fulfilled, (state) => {
         state.error = null;
         state.errorCode = null;
         state.validationErrors = null;
         state.status = PageLoadStatus.SUCCEEDED;
         state.refetchSignal += 1
       })
-      .addCase(deleteUserThunk.fulfilled, (state) => {
+      .addCase(deleteRoomThunk.fulfilled, (state) => {
         state.refetchSignal += 1;
         state.status = PageLoadStatus.SUCCEEDED;
       })
 
       .addMatcher(
         isAnyOf(
-          fetchUsersThunk.pending,
-          createUserThunk.pending,
-          updateUserThunk.pending,
-          deleteUserThunk.pending,
+          fetchRoomsThunk.pending,
+          createRoomThunk.pending,
+          updateRoomThunk.pending,
+          deleteRoomThunk.pending,
         ),
         (state) => {
           state.status = PageLoadStatus.LOADING;
@@ -122,10 +115,10 @@ const usersSlice = createSlice({
       // ── rejected — tất cả giống nhau → gom vào 1 matcher ──
       .addMatcher(
         isAnyOf(
-          fetchUsersThunk.rejected,
-          createUserThunk.rejected,
-          updateUserThunk.rejected,
-          deleteUserThunk.rejected,
+          fetchRoomsThunk.rejected,
+          createRoomThunk.rejected,
+          updateRoomThunk.rejected,
+          deleteRoomThunk.rejected,
         ),
         (state, action) => {
           state.status = PageLoadStatus.FAILED;
@@ -169,5 +162,5 @@ const usersSlice = createSlice({
       )
   },
 })
-export const { clearUsersError } = usersSlice.actions
-export const usersReducer = usersSlice.reducer
+export const { clearRoomsError } = roomsSlice.actions
+export const roomsReducer = roomsSlice.reducer

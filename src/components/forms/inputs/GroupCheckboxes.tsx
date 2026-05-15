@@ -41,9 +41,8 @@ export function GroupCheckboxes({
         {options.map((opt) => {
           const inputId = `${name}-cb-${opt.value}`.replace(/\s+/g, '-')
           return (
-            <>
+            <div key={String(opt.value)}>
               <input
-                key={String(opt.value)}
                 type="checkbox"
                 className="btn-check"
                 id={inputId}
@@ -57,7 +56,7 @@ export function GroupCheckboxes({
               <label className="btn btn-outline-secondary" htmlFor={inputId}>
                 {opt.label}
               </label>
-            </>
+            </div>
           )
         })}
         {showError && errorMessage ? (

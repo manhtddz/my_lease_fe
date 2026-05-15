@@ -1,7 +1,7 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit'
-import { createApiThunk } from '../utils/thunks'
-import type { Tenant } from '../types/TenantType'
-import { tenantApi } from '../services/tenant'
+import { createApiThunk } from '../../utils/thunks'
+import type { Tenant } from '../../types/TenantType'
+import { tenantApi } from '../../services/tenant'
 
 type TenantDetailState = {
     tenant: Tenant | null

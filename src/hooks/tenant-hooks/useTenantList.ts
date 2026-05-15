@@ -1,6 +1,6 @@
 import { useBaseList } from "../base/useBaseList"
 import type { TenantDataListParams, TenantSearchForm } from "../../types/TenantType"
-import { fetchTenantsThunk } from "../../reducers/tenantSlice"
+import { fetchTenantsThunk } from "../../reducers/tenants/tenantSlice"
 
 const initialSearchForm: TenantSearchForm = { name: '', phone_number: '' }
 

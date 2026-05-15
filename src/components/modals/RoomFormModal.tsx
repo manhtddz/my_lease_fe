@@ -1,35 +1,49 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../reducers/hooks"
-import { Modal } from "./Modal"
-import { extractValidationErrors, extractValidationServerErrors } from "../../utils/form"
-import { useTranslation } from "react-i18next"
-import { BasicButton } from "../buttons/BasicButton"
-import { PageLoadStatus } from "../../types/enums/PageLoadStatus"
-import { BasicInput } from "../forms/BasicInput"
-import { roomSchema, type RoomFormData } from "../../validation/rooms/roomSchema"
-import { RoomStatus, RoomStatusEnum } from "../../types/enums/rooms/RoomStatus"
-import { RoomType, RoomTypeEnum } from "../../types/enums/rooms/RoomType"
-import { clearRoomsError, createRoomThunk, updateRoomThunk } from "../../reducers/roomSlice"
-import { NumberInput } from "../forms/inputs/NumberInput"
-import { Select } from "../forms/inputs/Select"
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Modal } from './Modal'
+import { extractValidationErrors, extractValidationServerErrors } from '../../utils/form'
+import { useTranslation } from 'react-i18next'
+import { BasicButton } from '../buttons/BasicButton'
+import { BasicInput } from '../forms/BasicInput'
+import { roomSchema, type RoomFormData } from '../../validation/rooms/roomSchema'
+import { RoomType, RoomTypeEnum } from '../../types/enums/rooms/RoomType'
+import { NumberInput } from '../forms/inputs/NumberInput'
+import { Select } from '../forms/inputs/Select'
 
 type Props = {
   isOpen: boolean
   onClose: () => void
   defaultValues?: RoomFormData
   editingId?: number
+  // ── lifted từ slice ──
+  isLoading?: boolean
+  serverValidationErrors?: Record<string, string[]> | null
+  onSubmit: (data: RoomFormData) => Promise<boolean> // true = thành công, modal tự đóng
+  onClearErrors?: () => void
 }
 
-export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Props) {
-  const dispatch = useAppDispatch()
+export function RoomFormModal({
+  isOpen,
+  onClose,
+  defaultValues,
+  editingId,
+  isLoading = false,
+  serverValidationErrors,
+  onSubmit,
+  onClearErrors,
+}: Props) {
   const isEditing = !!editingId
-  const serverValidationErrors = useAppSelector(s => s.tenants.validationErrors)
-  const status = useAppSelector((s) => s.tenants.status)
-
   const { t } = useTranslation()
-  const DEFAULT_VALUES = { room_number: '', floor: '', room_type: RoomType.SINGLE, room_price: '', max_occupants: '' }
-  const [formData, setFormData] = useState<RoomFormData>(DEFAULT_VALUES)
 
+  const DEFAULT_VALUES: RoomFormData = {
+    room_number: '',
+    floor: '',
+    room_type: RoomType.SINGLE,
+    room_price: '',
+    max_occupants: '',
+  }
+
+  const [formData, setFormData] = useState<RoomFormData>(DEFAULT_VALUES)
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
   const isFirstRender = useRef(true)
 
   useEffect(() => {
@@ -44,83 +58,64 @@ export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Pro
     return Object.entries(RoomTypeEnum).map(([key, value]) => ({
       value: key,
       label: t(value),
-    }));
-  }, [t]);
-
-  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({});
+    }))
+  }, [t])
 
   const translatedServerErrors = useMemo(() => {
-    if (!serverValidationErrors) return {};
-    return extractValidationServerErrors(serverValidationErrors, t, 'room');
-  }, [serverValidationErrors, t]);
+    if (!serverValidationErrors) return {}
+    return extractValidationServerErrors(serverValidationErrors, t, 'room')
+  }, [serverValidationErrors, t])
 
-  const displayErrors = {
-    ...translatedServerErrors,
-    ...clientErrors
-  };
-
-  const busy = status === PageLoadStatus.LOADING
+  const displayErrors = { ...translatedServerErrors, ...clientErrors }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     const numberFields = ['floor', 'room_price', 'max_occupants']
-
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: numberFields.includes(name) ? (value === '' ? 0 : Number(value)) : value
+      [name]: numberFields.includes(name) ? (value === '' ? 0 : Number(value)) : value,
     }))
   }
 
   const handleClose = useCallback(() => {
     onClose()
-    dispatch(clearRoomsError())
+    onClearErrors?.()
     setFormData(DEFAULT_VALUES)
     setClientErrors({})
-  }, [onClose, dispatch])
+  }, [onClose, onClearErrors])
 
   const handleSubmit = async () => {
-    setClientErrors({});
-    dispatch(clearRoomsError());
+    setClientErrors({})
+    onClearErrors?.()
+
     const result = roomSchema(t).safeParse(formData)
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error);
-      setClientErrors(formattedErrors);
+      setClientErrors(extractValidationErrors(result.error))
       return
     }
-    const data = result.data
 
-    if (isEditing) {
-      if (editingId === undefined) return
-      const updateResult = await dispatch(updateRoomThunk({ ...data, id: editingId }))
-      if (updateRoomThunk.fulfilled.match(updateResult)) {
-        handleClose()
-      }
-    } else {
-      const createResult = await dispatch(createRoomThunk(data))
-      if (createRoomThunk.fulfilled.match(createResult)) {
-        handleClose()
-      }
-    }
+    const success = await onSubmit(result.data)
+    if (success) handleClose()
   }
 
   return (
     <Modal
       isOpen={isOpen}
-      title={isEditing ? 'Sửa phòng' : 'Tạo phòng'}
+      title={isEditing ? t('btn.edit') : t('btn.create')}
       onClose={handleClose}
       footer={
         <>
           <BasicButton
             className="btn btn-outline-secondary btn-sm"
             onClick={handleClose}
-            disabled={busy}
+            disabled={isLoading}
             children={t('btn.cancel')}
           />
           <BasicButton
             className="btn btn-primary"
             onClick={handleSubmit}
-            disabled={busy}
-            children={busy ? t('btn.saving') : t('btn.save')}
+            disabled={isLoading}
+            children={isLoading ? t('btn.saving') : t('btn.save')}
           />
         </>
       }
@@ -133,7 +128,7 @@ export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Pro
         value={formData.room_number}
         onChange={handleChange}
         required
-        disabled={busy}
+        disabled={isLoading}
         validationErrors={displayErrors.room_number ? displayErrors : {}}
       />
       <NumberInput
@@ -144,7 +139,7 @@ export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Pro
         onChange={handleChange}
         min={1}
         required
-        disabled={busy}
+        disabled={isLoading}
         validationErrors={displayErrors.floor ? displayErrors : {}}
       />
       <Select
@@ -164,7 +159,7 @@ export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Pro
         value={(formData.room_price ?? '').toString()}
         onChange={handleChange}
         required
-        disabled={busy}
+        disabled={isLoading}
         validationErrors={displayErrors.room_price ? displayErrors : {}}
       />
       <NumberInput
@@ -175,7 +170,7 @@ export function RoomFormModal({ isOpen, onClose, defaultValues, editingId }: Pro
         onChange={handleChange}
         max={5}
         required
-        disabled={busy}
+        disabled={isLoading}
         validationErrors={displayErrors.max_occupants ? displayErrors : {}}
       />
     </Modal>

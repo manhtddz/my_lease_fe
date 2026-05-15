@@ -19,5 +19,11 @@
             "2": "Fully Occupied",
             "3": "Reserved"
         }
+    },
+    "tenant_room_history": {
+        "is_presentative": {
+            "0": "Not representative occupant",
+            "1": "Representative occupant"
+        }
     }
 }

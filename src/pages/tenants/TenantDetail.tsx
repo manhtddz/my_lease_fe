@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
-import { fetchTenantByIdThunk } from '../../reducers/tenantDetailSlice'
+import { fetchTenantByIdThunk } from '../../reducers/tenants/tenantDetailSlice'
 
 const TABS = [
   { to: 'room', icon: 'ti-door', label: 'Phòng' },

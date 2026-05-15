@@ -1,8 +1,8 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit'
-import { createApiThunk } from '../utils/thunks'
-import { PageLoadStatus, type PageLoadStatusType } from '../types/enums/PageLoadStatus'
-import type { Tenant, TenantDataListParams, TenantDataListResult } from '../types/TenantType'
-import { tenantApi } from '../services/tenant'
+import { createApiThunk } from '../../utils/thunks'
+import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
+import type { Tenant, TenantDataListParams, TenantDataListResult } from '../../types/TenantType'
+import { tenantApi } from '../../services/tenant'
 
 type TenantsState = {
   list: Tenant[]

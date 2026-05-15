@@ -10,7 +10,8 @@ import { UserUpdatePage } from '../pages/user/UserUpdate'
 import { TenantListPage } from '../pages/tenants/TenantList'
 import { TenantDetailPage } from '../pages/tenants/TenantDetail'
 import { RoomListPage } from '../pages/rooms/RoomList'
-
+import { RoomDetailPage } from '../pages/rooms/RoomDetail'
+import { RoomDetailInfoPage } from '../pages/rooms/RoomDetailInfoPage'
 
 export const router = createBrowserRouter([
     {
@@ -73,6 +74,36 @@ export const router = createBrowserRouter([
                     {
                         path: '/rooms',
                         element: <RoomListPage />,
+                    },
+                    {
+                        path: '/rooms/detail/:roomId',
+                        element: <RoomDetailPage />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Navigate to="info" replace />,
+                            },
+                            {
+                                path: 'info',
+                                element: <RoomDetailInfoPage />,
+                            },
+                            {
+                                path: 'consumptions',
+                                element: (
+                                    <div className="px-4 py-4 text-body-secondary small">
+                                        Nội dung chỉ số tiêu thụ (đang phát triển).
+                                    </div>
+                                ),
+                            },
+                            {
+                                path: 'invoices',
+                                element: (
+                                    <div className="px-4 py-4 text-body-secondary small">
+                                        Nội dung hoá đơn (đang phát triển).
+                                    </div>
+                                ),
+                            },
+                        ],
                     },
                 ],
             },

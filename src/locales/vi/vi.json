@@ -18,7 +18,8 @@
         "export": "Xuất",
         "saving": "Đang lưu...",
         "loading": "Đang tải...",
-        "detail": "Chi tiết"
+        "detail": "Chi tiết",
+        "move_out": "Chuyển đi"
     },
     "messages": {
         "no_data": "Chưa có dữ liệu.",

@@ -1,7 +1,7 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit'
-import { authApi } from '../services/auth'
-import type { PublicUser } from '../types/UserType'
-import { createApiThunk } from '../utils/thunks'
+import { authApi } from '../../services/auth'
+import type { PublicUser } from '../../types/UserType'
+import { createApiThunk } from '../../utils/thunks'
 
 export type AuthState = {
   isAuthenticated: boolean

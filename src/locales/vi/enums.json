@@ -19,5 +19,11 @@
             "2": "Đủ người ở",
             "3": "Bảo trì"
         }
+    },
+    "tenant_room_history": {
+        "is_presentative": {
+            "0": "Người thuê phòng",
+            "1": "Người đại diện"
+        }
     }
 }

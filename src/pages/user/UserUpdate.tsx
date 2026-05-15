@@ -4,7 +4,7 @@ import {
   clearUsersError,
   fetchUserByIdThunk,
   updateUserThunk,
-} from '../../reducers/userSlice'
+} from '../../reducers/users/userSlice'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import type { User } from '../../types/UserType'
 import { userApi } from '../../services/user'

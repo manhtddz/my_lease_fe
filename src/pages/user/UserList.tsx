@@ -8,7 +8,7 @@ import { useUserList } from '../../hooks/user-hooks/useUserList'
 import { useTranslation } from 'react-i18next'
 import { UserStatusEnum } from '../../types/enums/users/UserStatus'
 import type { User } from '../../types/UserType'
-import { deleteUserThunk } from '../../reducers/userSlice'
+import { deleteUserThunk } from '../../reducers/users/userSlice'
 
 export function UserListPage() {
   const userListHook = useUserList()

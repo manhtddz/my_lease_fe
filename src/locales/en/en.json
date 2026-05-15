@@ -18,7 +18,8 @@
         "export": "Export",
         "saving": "Saving...",
         "loading": "Loading...",
-        "detail": "Detail"
+        "detail": "Detail",
+        "move_out": "Move out"
     },
     "messages": {
         "no_data": "No data.",

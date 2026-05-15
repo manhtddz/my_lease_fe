@@ -93,7 +93,7 @@
 // }
 
 import { useBaseList } from "../base/useBaseList"
-import { fetchUsersThunk } from "../../reducers/userSlice"
+import { fetchUsersThunk } from "../../reducers/users/userSlice"
 import type { UserSearchForm, UserDataListParams } from "../../types/UserType"
 
 const initialSearchForm: UserSearchForm = { name: '', email: '', status: [] }

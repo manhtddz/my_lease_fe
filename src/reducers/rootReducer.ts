@@ -1,9 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import { authReducer } from './authSlice'
-import { usersReducer } from './userSlice'
-import { tenantsReducer } from './tenantSlice'
-import { tenantDetailReducer } from './tenantDetailSlice'
-import { roomsReducer } from './roomSlice'
+import { authReducer } from './auth/authSlice'
+import { usersReducer } from './users/userSlice'
+import { tenantsReducer } from './tenants/tenantSlice'
+import { tenantDetailReducer } from './tenants/tenantDetailSlice'
+import { roomsReducer } from './rooms/roomSlice'
+import { roomDetailReducer } from './rooms/roomDetailSlice'
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -11,4 +12,5 @@ export const rootReducer = combineReducers({
   tenants: tenantsReducer,
   tenantDetail: tenantDetailReducer,
   rooms: roomsReducer,
+  roomDetail: roomDetailReducer,
 })

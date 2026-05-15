@@ -1,6 +1,6 @@
 import { useBaseList } from "../base/useBaseList"
 import type { RoomDataListParams, RoomSearchForm } from "../../types/RoomType"
-import { fetchRoomsThunk } from "../../reducers/roomSlice"
+import { fetchRoomsThunk } from "../../reducers/rooms/roomSlice"
 
 const initialSearchForm: RoomSearchForm = { room_number: '', room_type: [], status: [] }
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { clearUsersError, createUserThunk } from '../../reducers/userSlice'
+import { clearUsersError, createUserThunk } from '../../reducers/users/userSlice'
 import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import { BasicInput } from '../../components/forms/BasicInput'
 import { PasswordInput } from '../../components/forms/inputs/PasswordInput'

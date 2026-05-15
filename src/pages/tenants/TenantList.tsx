@@ -8,7 +8,7 @@ import { TenantSearchForm } from '../../components/search-forms/TenantSearchForm
 import { TenantFormModal } from '../../components/modals/TenantFormModal'
 import { useTenantModalForm } from '../../hooks/tenant-hooks/useTenantModalForm'
 import { useTranslation } from 'react-i18next'
-import { deleteTenantThunk } from '../../reducers/tenantSlice'
+import { deleteTenantThunk } from '../../reducers/tenants/tenantSlice'
 import { Link } from 'react-router-dom'
 
 export function TenantListPage() {
