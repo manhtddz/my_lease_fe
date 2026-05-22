@@ -1,17 +1,14 @@
 import { useMemo, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
-import { removeAccents } from "../../../utils/simulator";
+import { removeAccents } from "../../../../utils/simulator";
 
 type Props = {
   options: { value: string | number; label: string }[];
   placeholder?: string;
   onChange?: (value) => void;
   className?: string;
-  label?: string;
   name?: string;
   value?: string | number;
-  validationErrors?: Record<string, string[]>;
-  showError?: boolean;
   isSearch?: boolean;
 };
 const ITEM_HEIGHT = 32;
@@ -24,8 +21,6 @@ export function Select(props: Props) {
   const selectedOption = props.options.find(
     (opt) => opt.value === props.value
   );
-
-  const errorMessage = props.name ? props.validationErrors?.[props.name]?.[0] : null;
 
   const handleSelect = (value: string | number) => {
     const newValue = selectedOption?.value === value ? '' : value;
@@ -48,12 +43,10 @@ export function Select(props: Props) {
   const dynamicHeight = Math.min(filteredOptions.length * ITEM_HEIGHT, MAX_HEIGHT);
 
   return (
-    <div className="custom-select-container w-100 mb-3">
-      {props.label && <label className="form-label">{props.label}</label>}
-
+    <div className="custom-select-container w-100">
       <div className="position-relative">
         <div
-          className={`form-select custom-select-trigger d-flex justify-content-between align-items-center ${props.showError && errorMessage ? "border-danger" : ""}`}
+          className={`form-select custom-select-trigger d-flex justify-content-between align-items-center`}
           style={{ cursor: 'pointer', zIndex: 1001, paddingRight: '16px' }}
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -111,10 +104,6 @@ export function Select(props: Props) {
           </div>
         )}
       </div>
-
-      {props.showError && errorMessage ? (
-        <div className="invalid-feedback d-block">{errorMessage}</div>
-      ) : null}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { RoomSearchForm } from "../../types/RoomType";
 import { useTranslation } from "react-i18next";
-import { GroupCheckboxes } from "../forms/inputs/GroupCheckboxes";
+import { GroupCheckboxes } from "../base-components/forms/inputs/GroupCheckboxes";
 import { RoomTypeEnum } from "../../types/enums/rooms/RoomType";
 import { RoomStatusEnum } from "../../types/enums/rooms/RoomStatus";
 

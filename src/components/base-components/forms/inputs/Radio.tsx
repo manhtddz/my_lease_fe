@@ -6,34 +6,21 @@ type Props = {
         selfDisabled?: boolean
     }[]
     className?: string
-    label?: string
     name?: string
     value?: string | number
     onChange: (value: string | number) => void
-    validationErrors?: Record<string, string[]>
-    showError?: boolean
 }
 
 export function Radio({
     disabled = false,
     options = [],
-    label = '',
     className = 'mb-3',
     name = '',
     value = '',
-    validationErrors = {},
-    showError = false,
     onChange,
 }: Props) {
-    const errorMessage = name ? validationErrors?.[name]?.[0] : null
-
     return (
         <div className={className}>
-            {label ? (
-                <label className="form-label" htmlFor={name}>
-                    {label}
-                </label>
-            ) : null}
             {options.map((opt) => {
                 const inputId = `${name}-${opt.value}`.replace(/\s+/g, '-')
                 return (
@@ -54,9 +41,6 @@ export function Radio({
                     </div>
                 )
             })}
-            {showError && errorMessage ? (
-                <div className="invalid-feedback d-block">{errorMessage}</div>
-            ) : null}
         </div>
     )
 }

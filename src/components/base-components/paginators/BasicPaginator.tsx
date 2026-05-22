@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
+import { PageLoadStatus, type PageLoadStatusType } from '../../../types/enums/PageLoadStatus'
 
 type Props = {
   effectivePage: number

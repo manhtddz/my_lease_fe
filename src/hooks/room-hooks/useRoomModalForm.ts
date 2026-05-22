@@ -12,8 +12,8 @@ export function useRoomModalForm() {
         setIsModalOpen(true)
     }
 
-    const openEditModal = async (id: number) => {
-        const room = await roomApi.getRoomById(id)
+    const openEditModal = async (id: number, prefillData?: Room) => {
+        const room = prefillData ?? await roomApi.getRoomById(id)
         setEditingRoom(room)
         setIsModalOpen(true)
     }

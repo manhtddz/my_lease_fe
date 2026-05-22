@@ -1,6 +1,7 @@
 export type Props = {
   disabled?: boolean
   className?: string
+  inputClassName?: string
   id?: string
   name?: string
   autoComplete?: string
@@ -12,39 +13,29 @@ export type Props = {
   minLength?: number
   maxLength?: number
   validationErrors?: Record<string, string[]>
-  label?: string
   showError?: boolean
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export function BasicInput({
   disabled = false,
-  className = 'mb-3',
+  className = '',
+  inputClassName = '',
   id = '',
   name = '',
   autoComplete = 'off',
   required = false,
   value = '',
-  onChange = () => {},
+  onChange = () => { },
   placeholder = '',
   type = 'text',
   minLength,
   maxLength,
-  validationErrors = {},
-  label = '',
-  showError = true,
-  onKeyDown = () => {},
+  onKeyDown = () => { },
 }: Props) {
-  const errorMessage = name ? validationErrors?.[name]?.[0] : null
-  const invalid = Boolean(showError && errorMessage)
 
   return (
     <div className={className}>
-      {label ? (
-        <label className="form-label" htmlFor={id}>
-          {label}
-        </label>
-      ) : null}
       <input
         id={id}
         name={name}
@@ -58,11 +49,8 @@ export function BasicInput({
         minLength={minLength}
         maxLength={maxLength}
         onKeyDown={onKeyDown}
-        className={`form-control${invalid ? ' is-invalid' : ''}`}
+        className={`form-control${inputClassName ? ` ${inputClassName}` : ''}`}
       />
-      {showError && errorMessage ? (
-        <div className="invalid-feedback d-block">{errorMessage}</div>
-      ) : null}
     </div>
   )
 }

@@ -1,5 +1,5 @@
-import type { Props as BasicInputProps } from '../BasicInput'
-import { BasicInput } from '../BasicInput'
+import type { Props as BasicInputProps } from '../inputs/BasicInput'
+import { BasicInput } from '../inputs/BasicInput'
 
 export function SearchInput(props: BasicInputProps) {
   const { className = '', ...rest } = props

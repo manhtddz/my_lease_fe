@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { BasicInput } from '../BasicInput'
-import type { Props as BasicInputProps } from '../BasicInput'
+import { BasicInput } from './BasicInput'
+import type { Props as BasicInputProps } from './BasicInput'
 
 type PasswordInputProps = Omit<BasicInputProps, 'type'> & {
     showPasswordToggle?: boolean

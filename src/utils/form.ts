@@ -1,5 +1,5 @@
-import { ZodError } from 'zod';
-import type { TFunction } from 'i18next';
+import z, { ZodError } from 'zod';
+import { t, type TFunction } from 'i18next';
 
 export const extractValidationErrors = (error: ZodError) => {
     const formattedErrors: Record<string, string[]> = {};
@@ -45,4 +45,29 @@ export const extractValidationServerErrors = (
     return translatedErrors;
 };
 
+export const requiredNumberSchema = (fieldName: string) =>
+    z.preprocess(
+        (val) => {
+            if (val === undefined || val === null || val === '') {
+                return '';
+            }
+            return String(val);
+        },
+        z.string()
+            .min(1, t('validation.required', { field: fieldName }))
+            .transform((val, ctx) => {
+                const parsed = Number(val);
+
+                // TRỌNG TÂM: Khi người dùng gõ chữ, điều kiện này sẽ khớp
+                if (isNaN(parsed)) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        // Trả về câu thông báo định dạng số không hợp lệ do bạn dịch
+                        message: t('validation.invalid_number', { field: fieldName }),
+                    });
+                    return z.NEVER;
+                }
+                return parsed;
+            })
+    );
 

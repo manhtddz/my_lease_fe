@@ -32,5 +32,6 @@
     "invalid": "{{field}} is invalid",
     "min": "{{field}} must be at least {{length}} characters long",
     "min_value": "{{field}} must be greater than {{min}}",
-    "in": "{{field}} must be one of the following: {{values}}"
+    "in": "{{field}} must be one of the following: {{values}}",
+    "invalid_number" : "{{field}} can't receive string"
 }

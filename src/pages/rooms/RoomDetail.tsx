@@ -1,11 +1,14 @@
-import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
-import { fetchRoomByIdThunk } from '../../reducers/rooms/roomDetailSlice'
 import { RoomFormModal } from '../../components/modals/RoomFormModal'
 import { useRoomModalForm } from '../../hooks/room-hooks/useRoomModalForm'
-import { BasicButton } from '../../components/buttons/BasicButton'
+import { BasicButton } from '../../components/base-components/buttons/BasicButton'
+import type { RoomFormData } from '../../validation/rooms/roomSchema'
+import {
+  useGetRoomByIdQuery,
+  useUpdateRoomMutation,
+} from '../../services/rtk/roomApiSlice'
+import type { ApiError } from '../../types/ex/ApiError'
 
 const TABS = [
   { to: 'info', icon: 'ti-door', label: 'Thông tin' },
@@ -14,19 +17,34 @@ const TABS = [
 ] as const
 
 export function RoomDetailPage() {
-  const { room, error, isLoading } = useAppSelector((state) => state.roomDetail)
-  const roomModalForm = useRoomModalForm()
   const params = useParams()
-  const dispatch = useAppDispatch()
   const { t } = useTranslation()
+  const roomId = Number(params.roomId)
+  const roomIdInvalid = params.roomId != null && !Number.isFinite(roomId)
 
-  useEffect(() => {
-    const id = Number(params.roomId)
-    if (!Number.isFinite(id)) return
-    void dispatch(fetchRoomByIdThunk(id))
-  }, [dispatch, params.roomId])
+  const { data: room, isLoading, error: fetchError } = useGetRoomByIdQuery(roomId, {
+    skip: roomIdInvalid,
+  })
 
-  const roomIdInvalid = params.roomId != null && !Number.isFinite(Number(params.roomId))
+  const [updateRoom, { isLoading: isUpdating, error: updateError, reset: resetUpdate }] =
+    useUpdateRoomMutation()
+
+  const roomModalForm = useRoomModalForm()
+
+  const serverValidationErrors =
+    updateError && (updateError as ApiError).status === 422
+      ? (updateError as ApiError).errors ?? null
+      : null
+
+  const fetchErrorMessage = fetchError ? (fetchError as ApiError).message ?? 'Đã có lỗi xảy ra.' : null
+
+  const handleSubmit = async (data: RoomFormData): Promise<boolean> => {
+    if (roomModalForm.editingRoom?.id !== undefined) {
+      const result = await updateRoom({ ...data, id: roomModalForm.editingRoom.id })
+      return !('error' in result)
+    }
+    return false
+  }
 
   return (
     <>
@@ -36,9 +54,9 @@ export function RoomDetailPage() {
         </div>
       ) : null}
 
-      {error ? (
+      {fetchErrorMessage ? (
         <div className="alert alert-danger m-3" role="alert">
-          {error}
+          {fetchErrorMessage}
         </div>
       ) : null}
 
@@ -68,8 +86,8 @@ export function RoomDetailPage() {
             Danh sách phòng
           </Link>
           <BasicButton
-            onClick={() => roomModalForm.openEditModal(room.id)}
-            disabled={false}
+            onClick={() => room && roomModalForm.openEditModal(room.id, room)}
+            disabled={!room || isLoading}
             className="btn btn-sm btn-outline-secondary"
           >
             <i className="ti ti-edit me-1" aria-hidden />
@@ -95,6 +113,17 @@ export function RoomDetailPage() {
       </ul>
 
       <Outlet />
+
+      <RoomFormModal
+        isOpen={roomModalForm.isModalOpen}
+        onClose={() => roomModalForm.closeModal()}
+        defaultValues={roomModalForm.editingRoom}
+        editingId={roomModalForm.editingRoom?.id}
+        isLoading={isUpdating}
+        serverValidationErrors={serverValidationErrors}
+        onSubmit={handleSubmit}
+        onClearErrors={resetUpdate}
+      />
     </>
   )
 }

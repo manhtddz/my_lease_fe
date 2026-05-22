@@ -1,49 +1,59 @@
-import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
 import { DeleteConfirmModal } from '../../components/modals/DeleteConfirmModal'
-import { BasicPaginator } from '../../components/paginators/BasicPaginator'
-import { BasicButton } from '../../components/buttons/BasicButton'
+import { BasicPaginator } from '../../components/base-components/paginators/BasicPaginator'
+import { BasicButton } from '../../components/base-components/buttons/BasicButton'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useRoomList } from '../../hooks/room-hooks/useRoomList'
 import { useRoomModalForm } from '../../hooks/room-hooks/useRoomModalForm'
 import type { Room } from '../../types/RoomType'
-import {
-  clearRoomsError,
-  createRoomThunk,
-  deleteRoomThunk,
-  updateRoomThunk,
-} from '../../reducers/rooms/roomSlice'
-import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import { RoomFormModal } from '../../components/modals/RoomFormModal'
 import { RoomSearchForm } from '../../components/search-forms/RoomSearchForm'
 import { RoomTypeEnum } from '../../types/enums/rooms/RoomType'
 import { RoomStatusEnum } from '../../types/enums/rooms/RoomStatus'
 import type { RoomFormData } from '../../validation/rooms/roomSchema'
+import {
+  useCreateRoomMutation,
+  useUpdateRoomMutation,
+  useDeleteRoomMutation,
+} from '../../services/rtk/roomApiSlice'
+import type { ApiError } from '../../types/ex/ApiError'
+import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
 
 export function RoomListPage() {
   const roomListHook = useRoomList()
   const roomModalForm = useRoomModalForm()
-  const dispatch = useAppDispatch()
   const { t } = useTranslation()
 
-  // ── đọc state từ đúng slice ──
-  const isLoading = useAppSelector((s) => s.rooms.status === PageLoadStatus.LOADING)
-  const serverValidationErrors = useAppSelector((s) => s.rooms.validationErrors)
+  const [createRoom, { isLoading: isCreating, error: createError, reset: resetCreate }] = useCreateRoomMutation()
+  const [updateRoom, { isLoading: isUpdating, error: updateError, reset: resetUpdate }] = useUpdateRoomMutation()
+  const [deleteRoom] = useDeleteRoomMutation()
+
+  const isMutating = isCreating || isUpdating
+  const activeError = updateError ?? createError
+  const serverValidationErrors =
+    activeError && (activeError as ApiError).status === 422
+      ? (activeError as ApiError).errors ?? null
+      : null
 
   const handleSubmit = async (data: RoomFormData): Promise<boolean> => {
     if (roomModalForm.editingRoom?.id !== undefined) {
-      const result = await dispatch(updateRoomThunk({ ...data, id: roomModalForm.editingRoom.id }))
-      return updateRoomThunk.fulfilled.match(result)
+      const result = await updateRoom({ ...data, id: roomModalForm.editingRoom.id })
+      return !('error' in result)
     }
-    const result = await dispatch(createRoomThunk(data))
-    return createRoomThunk.fulfilled.match(result)
+    const result = await createRoom(data)
+    return !('error' in result)
+  }
+
+  const handleClearErrors = () => {
+    resetCreate()
+    resetUpdate()
   }
 
   return (
     <>
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
         <div>
-          <h1 className="h3 mb-1">Khách hàng</h1>
+          <h1 className="h3 mb-1">Phòng</h1>
           <p className="text-body-secondary small mb-0">
             {t('messages.total_records', { total: roomListHook.total })}
           </p>
@@ -154,7 +164,7 @@ export function RoomListPage() {
         onClose={() => roomListHook.modalDeleteConfirm.setIsDeleteModalOpen(false)}
         deleteId={roomListHook.modalDeleteConfirm.deleteId}
         domainObject="room"
-        onDelete={async (id) => { await roomListHook.dispatch(deleteRoomThunk(id)) }}
+        onDelete={async (id) => { await deleteRoom(id) }}
       />
 
       <RoomFormModal
@@ -162,10 +172,10 @@ export function RoomListPage() {
         onClose={() => roomModalForm.closeModal()}
         defaultValues={roomModalForm.editingRoom}
         editingId={roomModalForm.editingRoom?.id}
-        isLoading={isLoading}
+        isLoading={isMutating}
         serverValidationErrors={serverValidationErrors}
         onSubmit={handleSubmit}
-        onClearErrors={() => dispatch(clearRoomsError())}
+        onClearErrors={handleClearErrors}
       />
     </>
   )

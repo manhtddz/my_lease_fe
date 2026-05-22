@@ -1,41 +1,43 @@
-import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import { RoomDetailBasicInfoTab } from '../../components/tab-content/rooms/RoomDetailBasicInfoTab'
-import { fetchCurrentOccupantsByIdThunk, moveOutAllThunk, moveOutTenantThunk, removeAllOccupants } from '../../reducers/rooms/roomDetailSlice'
-import { useEffect } from 'react'
+import {
+  useGetRoomByIdQuery,
+  useGetCurrentOccupantsQuery,
+  useMoveOutTenantMutation,
+  useMoveOutAllMutation,
+} from '../../services/rtk/roomApiSlice'
 import { useParams } from 'react-router-dom'
 
 export function RoomDetailInfoPage() {
-  const room = useAppSelector((s) => s.roomDetail.room)
-  const currentOccupants = useAppSelector((s) => s.roomDetail.currentOccupants)
-  const isLoading = useAppSelector((s) => s.roomDetail.isLoading)
-  const dispatch = useAppDispatch()
   const params = useParams()
+  const roomId = Number(params.roomId)
+  const skip = !Number.isFinite(roomId)
 
-  useEffect(() => {
-    const id = Number(params.roomId)
-    if (!Number.isFinite(id)) return
-    void dispatch(fetchCurrentOccupantsByIdThunk(id))
-  }, [dispatch, params.roomId])
+  // Cache hit — RoomDetailPage đã fetch room này rồi
+  const { data: room, isLoading: isRoomLoading } = useGetRoomByIdQuery(roomId, { skip })
+
+  const { data: currentOccupants, isLoading: isOccupantsLoading } = useGetCurrentOccupantsQuery(
+    roomId,
+    { skip },
+  )
+
+  const [moveOutTenant] = useMoveOutTenantMutation()
+  const [moveOutAll] = useMoveOutAllMutation()
 
   const handleMoveOut = async (tenantId: number) => {
-    const result = await dispatch(moveOutTenantThunk({ roomId: room.id, tenantId }))
-
-    if (moveOutTenantThunk.fulfilled.match(result)) {
-      void dispatch(fetchCurrentOccupantsByIdThunk(room.id))
-    }
+    await moveOutTenant({ roomId, tenantId })
   }
 
   const handleMoveOutAll = async () => {
-    const result = await dispatch(moveOutAllThunk({ roomId: room.id }))
-    if (moveOutAllThunk.fulfilled.match(result)) {
-      void dispatch(removeAllOccupants())
-    }
+    await moveOutAll(roomId)
   }
 
-  return <RoomDetailBasicInfoTab
-    room={room}
-    currentOccupants={currentOccupants}
-    isLoading={isLoading} handleMoveOut={handleMoveOut} 
-    handleMoveOutAll={handleMoveOutAll}
-  />
+  return (
+    <RoomDetailBasicInfoTab
+      room={room ?? null}
+      currentOccupants={currentOccupants ?? null}
+      isLoading={isRoomLoading || isOccupantsLoading}
+      handleMoveOut={handleMoveOut}
+      handleMoveOutAll={handleMoveOutAll}
+    />
+  )
 }

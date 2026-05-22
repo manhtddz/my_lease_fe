@@ -13,7 +13,6 @@ type Props = {
 export function Checkbox({
   disabled = false,
   value = false,
-  label = '',
   optionLabel = '',
   className = 'mb-3',
   name = '',
@@ -29,11 +28,6 @@ export function Checkbox({
 
   return (
     <div className={className}>
-      {label ? (
-        <label className="form-label" htmlFor={name}>
-          {label}
-        </label>
-      ) : null}
       <div className={`form-check${isSwitch ? ' form-switch' : ''}`}>
         <input
           type="checkbox"

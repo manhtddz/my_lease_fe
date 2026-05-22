@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { GroupCheckboxes } from "../forms/inputs/GroupCheckboxes";
+import { GroupCheckboxes } from "../base-components/forms/inputs/GroupCheckboxes";
 import { UserStatusEnum } from "../../types/enums/users/UserStatus";
 import { useTranslation } from "react-i18next";
 import type { UserSearchForm } from "../../types/UserType";

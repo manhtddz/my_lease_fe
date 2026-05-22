@@ -1,5 +1,5 @@
-import { BasicInput } from '../BasicInput';
-import type { Props as BasicInputProps } from '../BasicInput';
+import { BasicInput } from './BasicInput';
+import type { Props as BasicInputProps } from './BasicInput';
 
 type NumberInputProps = Omit<BasicInputProps, 'type'> & {
     allowNegative?: boolean;
@@ -11,21 +11,24 @@ export function NumberInput({ allowNegative = false, min, max, ...props }: Numbe
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         console.log(val);
-        if (!allowNegative && Number(val) < 0) {
+        
+        if (typeof val === 'string' && (val === '' || isNaN(Number(val)))) {            
+            props.onChange?.(e);
             return;
         }
-        if (min && Number(val) < min) {
-            return;
-        }
-        if (max && Number(val) > max) {
-            return;
+        
+        const numValue = Number(val);
+        if (!isNaN(numValue)) {
+            if (!allowNegative && numValue < 0) return;
+            if (min !== undefined && numValue < min) return;
+            if (max !== undefined && numValue > max) return;
         }
 
         props.onChange?.(e);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!allowNegative && (e.key === '-' || e.key === 'e' || e.key === 'E')) {
+        if (!allowNegative && e.key === '-') {
             e.preventDefault();
         }
     };
@@ -33,7 +36,7 @@ export function NumberInput({ allowNegative = false, min, max, ...props }: Numbe
     return (
         <BasicInput
             {...props}
-            type="number"
+            type="text"
             onChange={handleNumberChange}
             onKeyDown={handleKeyDown}
         />

@@ -32,5 +32,6 @@
     "invalid": "{{field}} không hợp lệ",
     "min": "{{field}} phải có ít nhất {{length}} ký tự",
     "min_value": "{{field}} phải lớn hơn {{min}}",
-    "in": "{{field}} phải là một trong các giá trị sau: {{values}}"
+    "in": "{{field}} phải là một trong các giá trị sau: {{values}}",
+    "invalid_number" : "{{field}} không được nhập chữ"
 }

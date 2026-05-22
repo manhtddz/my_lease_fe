@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Modal } from './Modal'
+import { Modal } from '../base-components/modals/Modal'
 import { useTranslation } from 'react-i18next'
 
 type Props = {

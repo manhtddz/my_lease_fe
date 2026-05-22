@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../reducers/hooks'
 import { useTranslation } from 'react-i18next'
 import { logout } from '../reducers/auth/authSlice'
 import { useNavigate } from 'react-router-dom'
-import { Checkbox } from '../components/forms/inputs/Checkbox'
+import { Checkbox } from '../components/base-components/forms/inputs/Checkbox'
 
 export function Navbar() {
     const dispatch = useAppDispatch()
