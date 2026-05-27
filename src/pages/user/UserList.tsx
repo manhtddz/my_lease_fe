@@ -2,16 +2,19 @@ import { Link } from 'react-router-dom'
 import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
 import { DeleteConfirmModal } from '../../components/modals/DeleteConfirmModal'
 import { UserSearchForm } from '../../components/search-forms/UserSearchForm'
-import { BasicPaginator } from '../../components/paginators/BasicPaginator'
-import { BasicButton } from '../../components/buttons/BasicButton'
+import { BasicPaginator } from '../../components/base-components/paginators/BasicPaginator'
+import { BasicButton } from '../../components/base-components/buttons/BasicButton'
 import { useUserList } from '../../hooks/user-hooks/useUserList'
 import { useTranslation } from 'react-i18next'
 import { UserStatusEnum } from '../../types/enums/users/UserStatus'
 import type { User } from '../../types/UserType'
+import { useDeleteUserMutation } from '../../services/rtk/userApiSlice'
 
 export function UserListPage() {
   const userListHook = useUserList()
   const { t } = useTranslation()
+  const [deleteUser] = useDeleteUserMutation()
+
   return (
     <>
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
@@ -148,7 +151,8 @@ export function UserListPage() {
         onClose={() =>
           userListHook.modalDeleteConfirm.setIsDeleteModalOpen(false)
         }
-        userId={userListHook.modalDeleteConfirm.deleteId}
+        deleteId={userListHook.modalDeleteConfirm.deleteId}
+        onDelete={async (id) => { await deleteUser(id) }}
         domainObject="người dùng"
       />
     </>

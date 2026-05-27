@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  clearUsersError,
-  fetchUserByIdThunk,
-  updateUserThunk,
-} from '../../reducers/userSlice'
-import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
 import type { User } from '../../types/UserType'
-import { userApi } from '../../services/user'
-import { BasicInput } from '../../components/forms/BasicInput'
-import { PasswordInput } from '../../components/forms/inputs/PasswordInput'
-import { BasicButton } from '../../components/buttons/BasicButton'
-import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
-import { Checkbox } from '../../components/forms/inputs/Checkbox'
+import { BasicInput } from '../../components/base-components/forms/inputs/BasicInput'
+import { PasswordInput } from '../../components/base-components/forms/inputs/PasswordInput'
+import { BasicButton } from '../../components/base-components/buttons/BasicButton'
+import { Checkbox } from '../../components/base-components/forms/inputs/Checkbox'
+import { useGetUserByIdQuery, useUpdateUserMutation } from '../../services/rtk/userApiSlice'
+import type { ApiError } from '../../types/ex/ApiError'
 
 export function UserUpdatePage() {
   const { userId: userIdParam } = useParams<{ userId: string }>()
   const userIdNum = userIdParam ? parseInt(userIdParam, 10) : NaN
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  const { data: fetchedUser } = useGetUserByIdQuery(userIdNum, {
+    skip: !Number.isFinite(userIdNum),
+  })
+
+  const [updateUser, { isLoading, error: serverError, reset }] = useUpdateUserMutation()
+
+  const validationErrors =
+    serverError && (serverError as ApiError).status === 422
+      ? (serverError as ApiError).errors ?? null
+      : null
 
   const [user, setUser] = useState<User>({
     id: Number.isFinite(userIdNum) ? userIdNum : 0,
@@ -28,46 +32,30 @@ export function UserUpdatePage() {
     status: '',
   })
 
-  const status = useAppSelector((s) => s.users.status)
-  const error = useAppSelector((s) => s.users.error)
-  const validationErrors = useAppSelector((s) => s.users.validationErrors)
-
   useEffect(() => {
-    dispatch(clearUsersError())
-    return () => {
-      dispatch(clearUsersError())
+    if (fetchedUser) {
+      setUser(fetchedUser)
     }
-  }, [dispatch])
-
-  useEffect(() => {
-    if (!Number.isFinite(userIdNum)) return
-    const loadUser = async () => {
-      const data = await userApi.getUserById(userIdNum)
-      setUser(data)
-    }
-    void loadUser()
-  }, [userIdNum])
-
-  useEffect(() => {
-    if (!Number.isFinite(userIdNum)) return
-    void dispatch(fetchUserByIdThunk(userIdNum))
-  }, [dispatch, userIdNum])
+  }, [fetchedUser])
 
   async function handleSubmit() {
-    const name = String(user.name).trim()
-    const email = String(user.email).trim()
-    const password = String(user.password)
-    const status = String(user.status)
-
-    const result = await dispatch(
-      updateUserThunk({ id: userIdNum, name, email, password, status }),
-    )
-    if (updateUserThunk.fulfilled.match(result)) {
+    reset()
+    const result = await updateUser({
+      id: userIdNum,
+      name: String(user.name).trim(),
+      email: String(user.email).trim(),
+      password: String(user.password),
+      status: String(user.status),
+    })
+    if (!('error' in result)) {
       navigate('/users', { replace: true })
     }
   }
 
-  const busy = status === PageLoadStatus.LOADING
+  const generalError =
+    serverError && (serverError as ApiError).status !== 422
+      ? ((serverError as ApiError).message ?? 'Đã có lỗi xảy ra.')
+      : null
 
   return (
     <>
@@ -76,9 +64,9 @@ export function UserUpdatePage() {
         Cập nhật chỉnh sửa sẽ bổ sung sau.
       </p>
 
-      {error && status === PageLoadStatus.FAILED ? (
+      {generalError ? (
         <div className="alert alert-danger" role="alert">
-          {error}
+          {generalError}
         </div>
       ) : null}
 
@@ -94,7 +82,7 @@ export function UserUpdatePage() {
           value={user.name}
           onChange={(e) => setUser({ ...user, name: e.target.value })}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={validationErrors ? { name: validationErrors.name } : { name: [] }}
         />
         <BasicInput
@@ -105,7 +93,7 @@ export function UserUpdatePage() {
           value={user.email}
           onChange={(e) => setUser({ ...user, email: e.target.value })}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={validationErrors ? { email: validationErrors.email } : { email: [] }}
         />
         <PasswordInput
@@ -116,7 +104,7 @@ export function UserUpdatePage() {
           value={user.password}
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={validationErrors ? { password: validationErrors.password } : { password: [] }}
           showPasswordToggle={false}
         />
@@ -131,8 +119,8 @@ export function UserUpdatePage() {
           <BasicButton
             onClick={handleSubmit}
             className="btn btn-primary"
-            disabled={busy}
-            children={busy ? 'Đang lưu…' : 'Sửa'}
+            disabled={isLoading}
+            children={isLoading ? 'Đang lưu…' : 'Sửa'}
           />
           <Link className="btn btn-outline-secondary" to="/users">
             Hủy

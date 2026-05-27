@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../reducers/hooks"
-import type { TenantFormData } from "../../validation/tenants/tenantSchema"
-import { tenantSchema } from "../../validation/tenants/tenantSchema"
-import { clearTenantsError, createTenantThunk, updateTenantThunk } from "../../reducers/tenantSlice"
-import { Modal } from "./Modal"
-import { extractValidationErrors, extractValidationServerErrors } from "../../utils/form"
-import { useTranslation } from "react-i18next"
-import { BasicButton } from "../buttons/BasicButton"
-import { PageLoadStatus } from "../../types/enums/PageLoadStatus"
-import { BasicInput } from "../forms/BasicInput"
-// features/users/components/UserFormModal.tsx
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { TenantFormData } from '../../validation/tenants/tenantSchema'
+import { tenantSchema } from '../../validation/tenants/tenantSchema'
+import { Modal } from '../base-components/modals/Modal'
+import { extractValidationErrors, extractValidationServerErrors } from '../../utils/form'
+import { useTranslation } from 'react-i18next'
+import { BasicButton } from '../base-components/buttons/BasicButton'
+import { BasicInput } from '../base-components/forms/inputs/BasicInput'
+import { FormInput } from '../base-components/forms/inputs/FormInput'
+import { useCreateTenantMutation, useUpdateTenantMutation } from '../../services/rtk/tenantApiSlice'
+import type { ApiError } from '../../types/ex/ApiError'
+
 type Props = {
   isOpen: boolean
   onClose: () => void
@@ -18,17 +18,24 @@ type Props = {
 }
 
 export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: Props) {
-  const dispatch = useAppDispatch()
   const isEditing = !!editingId
-  const serverValidationErrors = useAppSelector(s => s.tenants.validationErrors)
-  const status = useAppSelector((s) => s.tenants.status)
-
   const { t } = useTranslation()
 
-  const [formData, setFormData] = useState<TenantFormData>(
-    { name: '', phone_number: '', id_card_number: '' }
-  )
+  const [createTenant, { isLoading: isCreating, error: createError, reset: resetCreate }] =
+    useCreateTenantMutation()
+  const [updateTenant, { isLoading: isUpdating, error: updateError, reset: resetUpdate }] =
+    useUpdateTenantMutation()
 
+  const isBusy = isCreating || isUpdating
+  const activeError = updateError ?? createError
+  const serverValidationErrors =
+    activeError && (activeError as ApiError).status === 422
+      ? (activeError as ApiError).errors ?? null
+      : null
+
+  const [formData, setFormData] = useState<TenantFormData>({
+    name: '', phone_number: '', id_card_number: '',
+  })
   const isFirstRender = useRef(true)
 
   useEffect(() => {
@@ -39,50 +46,44 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
     setFormData(defaultValues ?? { name: '', phone_number: '', id_card_number: '' })
   }, [defaultValues])
 
-  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({});
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
 
   const translatedServerErrors = useMemo(() => {
-    if (!serverValidationErrors) return {};
-    return extractValidationServerErrors(serverValidationErrors, t);
-  }, [serverValidationErrors, t]);
+    if (!serverValidationErrors) return {}
+    return extractValidationServerErrors(serverValidationErrors, t, 'tenant')
+  }, [serverValidationErrors, t])
 
-  const displayErrors = {
-    ...translatedServerErrors,
-    ...clientErrors
-  };
-
-  const busy = status === PageLoadStatus.LOADING
+  const displayErrors = { ...translatedServerErrors, ...clientErrors }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleClose = useCallback(() => {
     onClose()
-    dispatch(clearTenantsError())
+    resetCreate()
+    resetUpdate()
     setFormData({ name: '', phone_number: '', id_card_number: '' })
     setClientErrors({})
-  }, [onClose, dispatch])
+  }, [onClose, resetCreate, resetUpdate])
 
   const handleSubmit = async () => {
-    setClientErrors({});
-    dispatch(clearTenantsError());
-    const result = tenantSchema.safeParse(formData)
+    setClientErrors({})
+    resetCreate()
+    resetUpdate()
+    const result = tenantSchema(t).safeParse(formData)
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
-      setClientErrors(formattedErrors);
+      setClientErrors(extractValidationErrors(result.error))
       return
     }
+    const data = result.data
     if (isEditing) {
-      const updateResult = await dispatch(updateTenantThunk({ ...formData, id: editingId }))
-      if (updateTenantThunk.fulfilled.match(updateResult)) {
-        handleClose()
-      }
+      if (editingId === undefined) return
+      const updateResult = await updateTenant({ ...data, id: editingId })
+      if (!('error' in updateResult)) handleClose()
     } else {
-      const createResult = await dispatch(createTenantThunk(formData))
-      if (createTenantThunk.fulfilled.match(createResult)) {
-        handleClose()
-      }
+      const createResult = await createTenant(data)
+      if (!('error' in createResult)) handleClose()
     }
   }
 
@@ -96,51 +97,74 @@ export function TenantFormModal({ isOpen, onClose, defaultValues, editingId }: P
           <BasicButton
             className="btn btn-outline-secondary btn-sm"
             onClick={handleClose}
-            disabled={busy}
-            children={t('cancel')}
+            disabled={isBusy}
+            children={t('btn.cancel')}
           />
           <BasicButton
             className="btn btn-primary"
             onClick={handleSubmit}
-            disabled={busy}
-            children={busy ? t('saving') : isEditing ? t('update') : t('create')}
+            disabled={isBusy}
+            children={isBusy ? t('btn.saving') : t('btn.save')}
           />
         </>
       }
     >
-      <BasicInput
-        id="create-name"
-        name="name"
-        label={t('user.name')}
-        autoComplete="name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-        disabled={busy}
-        validationErrors={displayErrors.name ? displayErrors : {}}
-      />
-      <BasicInput
-        id="create-phone_number"
-        name="phone_number"
-        label={t('tenant.phone_number')}
-        autoComplete="email"
-        value={formData.phone_number}
-        onChange={handleChange}
-        required
-        disabled={busy}
-        validationErrors={displayErrors.phone_number ? displayErrors : {}}
-      />
-      <BasicInput
-        id="create-id_card_number"
-        name="id_card_number"
-        label={t('tenant.id_card_number')}
-        autoComplete="id_card_number"
-        value={formData.id_card_number}
-        onChange={handleChange}
-        required
-        disabled={busy}
-        validationErrors={displayErrors.id_card_number ? displayErrors : {}}
-      />
+      <FormInput
+        idlabel="create-name"
+        label={t('models.tenant.name')}
+        error={displayErrors.name ? (Array.isArray(displayErrors.name) ? displayErrors.name : [displayErrors.name]) : []}
+        labelClass="form-label fw-medium"
+        errorClass="text-danger small mt-1"
+        required={true}
+      >
+        <BasicInput
+          id="create-name"
+          name="name"
+          autoComplete="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          disabled={isBusy}
+        />
+      </FormInput>
+
+      <FormInput
+        idlabel="create-phone_number"
+        label={t('models.tenant.phone_number')}
+        error={displayErrors.phone_number ? (Array.isArray(displayErrors.phone_number) ? displayErrors.phone_number : [displayErrors.phone_number]) : []}
+        labelClass="form-label fw-medium"
+        errorClass="text-danger small mt-1"
+        required={true}
+      >
+        <BasicInput
+          id="create-phone_number"
+          name="phone_number"
+          autoComplete="off"
+          value={formData.phone_number}
+          onChange={handleChange}
+          required
+          disabled={isBusy}
+        />
+      </FormInput>
+
+      <FormInput
+        idlabel="create-id_card_number"
+        label={t('models.tenant.id_card_number')}
+        error={displayErrors.id_card_number ? (Array.isArray(displayErrors.id_card_number) ? displayErrors.id_card_number : [displayErrors.id_card_number]) : []}
+        labelClass="form-label fw-medium"
+        errorClass="text-danger small mt-1"
+        required={true}
+      >
+        <BasicInput
+          id="create-id_card_number"
+          name="id_card_number"
+          autoComplete="off"
+          value={formData.id_card_number}
+          onChange={handleChange}
+          required
+          disabled={isBusy}
+        />
+      </FormInput>
     </Modal>
   )
 }

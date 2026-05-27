@@ -5,7 +5,7 @@ import { RouterProvider } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/theme-overrides.css'
 import { syncBootstrapTheme } from './syncBootstrapTheme'
-import './services/mock'
+// import './services/mock'
 import { store } from './reducers'
 import { router } from './router'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
@@ -13,6 +13,9 @@ import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 import './styles/main.css'
 import './locales/lang'
 
+if (import.meta.env.VITE_USE_MOCK === 'true') {
+  void import('./services/mock')
+}
 syncBootstrapTheme()
 
 createRoot(document.getElementById('root')!).render(

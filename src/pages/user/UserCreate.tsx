@@ -1,67 +1,68 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { clearUsersError, createUserThunk } from '../../reducers/userSlice'
-import { useAppDispatch, useAppSelector } from '../../reducers/hooks'
-import { BasicInput } from '../../components/forms/BasicInput'
-import { PasswordInput } from '../../components/forms/inputs/PasswordInput'
-import { BasicButton } from '../../components/buttons/BasicButton'
-import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
-import { Select } from '../../components/forms/inputs/Select'
+import { BasicInput } from '../../components/base-components/forms/inputs/BasicInput'
+import { PasswordInput } from '../../components/base-components/forms/inputs/PasswordInput'
+import { BasicButton } from '../../components/base-components/buttons/BasicButton'
+import { Select } from '../../components/base-components/forms/inputs/Select'
 import { useTranslation } from 'react-i18next'
 import { extractValidationErrors, extractValidationServerErrors } from '../../utils/form'
 import { userSchema } from '../../validation/users/userSchema'
 import { UserStatusEnum } from '../../types/enums/users/UserStatus'
+import { useCreateUserMutation } from '../../services/rtk/userApiSlice'
+import type { ApiError } from '../../types/ex/ApiError'
 
 export function UserCreatePage() {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const status = useAppSelector((s) => s.users.status)
-  const error = useAppSelector((s) => s.users.error)
-  const serverValidationErrors = useAppSelector((s) => s.users.validationErrors)
+  const [createUser, { isLoading, error: serverError, reset }] = useCreateUserMutation()
+
+  const serverValidationErrors =
+    serverError && (serverError as ApiError).status === 422
+      ? (serverError as ApiError).errors ?? null
+      : null
+
   const [formData, setFormData] = useState({ name: '', email: '', password: '', status: '' })
-  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({});
+  const [clientErrors, setClientErrors] = useState<Record<string, string[]>>({})
 
   const statusOptions = useMemo(() => {
     return Object.entries(UserStatusEnum).map(([key, value]) => ({
       value: key,
       label: t(value),
-    }));
-  }, [t]);
+    }))
+  }, [t])
 
   const translatedServerErrors = useMemo(() => {
-    if (!serverValidationErrors) return {};
-    return extractValidationServerErrors(serverValidationErrors, t);
-  }, [serverValidationErrors, t]);
+    if (!serverValidationErrors) return {}
+    return extractValidationServerErrors(serverValidationErrors, t)
+  }, [serverValidationErrors, t])
 
-  const displayErrors = {
-    ...translatedServerErrors,
-    ...clientErrors
-  };
+  const displayErrors = { ...translatedServerErrors, ...clientErrors }
 
-  useEffect(() => {
-    dispatch(clearUsersError())
-  }, [dispatch])
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }, [])
 
   async function handleSubmit() {
-    setClientErrors({}); // Reset lỗi client cũ
-    dispatch(clearUsersError()); // Reset lỗi server cũ
+    setClientErrors({})
+    reset()
 
-    const result = userSchema.safeParse(formData);
+    const result = userSchema.safeParse(formData)
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
-      setClientErrors(formattedErrors);
-      return;
+      setClientErrors(extractValidationErrors(result.error))
+      return
     }
 
-    const createResult = await dispatch(createUserThunk(formData))
-    if (createUserThunk.fulfilled.match(createResult)) {
+    const createResult = await createUser(result.data)
+    if (!('error' in createResult)) {
       navigate('/users', { replace: true })
     }
   }
 
-  const busy = status === PageLoadStatus.LOADING
+  const generalError =
+    serverError && (serverError as ApiError).status !== 422
+      ? ((serverError as ApiError).message ?? 'Đã có lỗi xảy ra.')
+      : null
 
   return (
     <>
@@ -70,9 +71,9 @@ export function UserCreatePage() {
         Cập nhật chỉnh sửa sẽ bổ sung sau.
       </p>
 
-      {error && status === PageLoadStatus.FAILED ? (
+      {generalError ? (
         <div className="alert alert-danger" role="alert">
-          {error}
+          {generalError}
         </div>
       ) : null}
 
@@ -86,9 +87,9 @@ export function UserCreatePage() {
           label={t('user.name')}
           autoComplete="name"
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          onChange={handleChange}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={displayErrors.name ? displayErrors : {}}
         />
         <BasicInput
@@ -97,9 +98,9 @@ export function UserCreatePage() {
           label={t('user.email')}
           autoComplete="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={handleChange}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={displayErrors.email ? displayErrors : {}}
         />
         <PasswordInput
@@ -108,33 +109,19 @@ export function UserCreatePage() {
           label={t('user.password')}
           autoComplete="new-password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          onChange={handleChange}
           required
-          disabled={busy}
+          disabled={isLoading}
           validationErrors={displayErrors.password ? displayErrors : {}}
           showPasswordToggle={false}
         />
-        {/* <Radio
-          name="status"
-          label={t('user.status')}
-          options={[{ value: '1', label: 'Hoạt động' }, { value: '0', label: 'Không hoạt động' }]}
-          value={formData.status}
-          onChange={(value) => setFormData({ ...formData, status: Number(value) })}
-        /> */}
-        {/* <Checkbox
-          name="status"
-          label={t('user.status')}
-          optionLabel="Hoạt động"
-          value={formData.status === 1}
-          onChange={(value) => setFormData({ ...formData, status: value ? 1 : 0 })}
-        /> */}
         <Select
           isSearch={true}
           value={formData.status}
           options={statusOptions}
           placeholder={t('user.status')}
           name="status"
-          onChange={(value) => setFormData({ ...formData, status: value })}
+          onChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
           validationErrors={displayErrors.status ? displayErrors : {}}
           showError={true}
         />
@@ -142,8 +129,8 @@ export function UserCreatePage() {
           <BasicButton
             className="btn btn-primary"
             onClick={handleSubmit}
-            disabled={busy}
-            children={busy ? t('saving') : t('create')}
+            disabled={isLoading}
+            children={isLoading ? t('saving') : t('create')}
           />
           <Link className="btn btn-outline-secondary" to="/users">
             {t('cancel')}

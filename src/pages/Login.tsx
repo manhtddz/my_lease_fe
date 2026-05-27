@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { clearAuthError, loginThunk } from '../reducers/authSlice'
+import { setAuthenticated, clearAuthError } from '../reducers/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '../reducers/hooks'
-import { PasswordInput } from '../components/forms/inputs/PasswordInput'
-import { BasicInput } from '../components/forms/BasicInput'
-import { BasicButton } from '../components/buttons/BasicButton'
+import { PasswordInput } from '../components/base-components/forms/inputs/PasswordInput'
+import { BasicInput } from '../components/base-components/forms/inputs/BasicInput'
+import { BasicButton } from '../components/base-components/buttons/BasicButton'
 import { useTranslation } from 'react-i18next'
 import { loginSchema } from '../validation/auth/loginSchema'
 import { extractValidationErrors } from '../utils/form'
+import { useLoginMutation } from '../services/rtk/authApiSlice'
+import type { ApiError } from '../types/ex/ApiError'
 
 export function LoginPage() {
   const dispatch = useAppDispatch()
@@ -20,39 +22,34 @@ export function LoginPage() {
     '/'
 
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
-  const isLoading = useAppSelector((s) => s.auth.isLoading)
-  const error = useAppSelector((s) => s.auth.error)
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [localErrors, setLocalErrors] = useState<Record<string, string[]>>({});
+  const [login, { isLoading, error: serverError }] = useLoginMutation()
 
-  useEffect(() => {
-    dispatch(clearAuthError())
-    return () => {
-      dispatch(clearAuthError())
-    }
-  }, [dispatch])
+  const [formData, setFormData] = useState({ email: '', password: '' })
+  const [localErrors, setLocalErrors] = useState<Record<string, string[]>>({})
 
   if (isAuthenticated) {
     return <Navigate to={from} replace />
   }
 
+  const serverErrorMessage =
+    serverError ? ((serverError as ApiError).message ?? 'Đã có lỗi xảy ra.') : null
+
   async function handleSubmit() {
-    setLocalErrors({});
+    setLocalErrors({})
+    dispatch(clearAuthError())
 
-    const result = loginSchema.safeParse(formData);
-
+    const result = loginSchema.safeParse(formData)
     if (!result.success) {
-      const formattedErrors = extractValidationErrors(result.error, t);
-
-      setLocalErrors(formattedErrors);
-      return;
+      setLocalErrors(extractValidationErrors(result.error))
+      return
     }
 
-    const email = String(formData.email).trim()
-    const password = String(formData.password)
-
-    const loginResult = await dispatch(loginThunk({ email, password }))
-    if (loginThunk.fulfilled.match(loginResult)) {
+    const loginResult = await login({
+      email: String(formData.email).trim(),
+      password: String(formData.password),
+    })
+    if (!('error' in loginResult)) {
+      dispatch(setAuthenticated(loginResult.data))
       navigate(from, { replace: true })
     }
   }
@@ -63,9 +60,9 @@ export function LoginPage() {
         <div className="card-body p-4">
           <h1 className="h4 text-center mb-4">{t('welcome')}</h1>
 
-          {error ? (
+          {serverErrorMessage ? (
             <div className="alert alert-danger" role="alert">
-              {error}
+              {serverErrorMessage}
             </div>
           ) : null}
 

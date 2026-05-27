@@ -1,15 +1,15 @@
+import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
 const domain = 'tenant';
+export const tenantSchema = (t: TFunction) => {
+    const f = (field: string) => t(`models.${domain}.${field}`);
 
-export const tenantSchema = z.object({
-    phone_number: z
-        .string()
-        .min(1, `${domain}.phone_number.required`),
-    id_card_number: z
-        .string(),
-    
-    name: z.string().min(1, `${domain}.name.required`),
-});
+    return z.object({
+        name: z.string().min(1, t('validation.required', { field: f('name') })),
+        phone_number: z.string().min(1, t('validation.required', { field: f('phone_number') })),
+        id_card_number: z.string().min(1, t('validation.required', { field: f('id_card_number') })),
+    });
+};
 
-export type TenantFormData = z.infer<typeof tenantSchema>;
+export type TenantFormData = z.infer<ReturnType<typeof tenantSchema>>;
