@@ -25,5 +25,15 @@
             "0": "Người thuê phòng",
             "1": "Người đại diện"
         }
+    },
+    "debt": {
+        "status": {
+            "0": "Đã hủy",
+            "1": "Đang hoạt động"
+        },
+        "debt_type": {
+            "1": "Công nợ chủ nhà",
+            "2": "Công nợ khách thuê"
+        }
     }
 }

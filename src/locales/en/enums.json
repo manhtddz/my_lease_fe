@@ -25,5 +25,15 @@
             "0": "Not representative occupant",
             "1": "Representative occupant"
         }
+    },
+    "debt": {
+        "status": {
+            "0": "Cancelled",
+            "1": "Active"
+        },
+        "debt_type": {
+            "1": "Owner Debt",
+            "2": "Tenant Debt"
+        }
     }
 }

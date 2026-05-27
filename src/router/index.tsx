@@ -10,6 +10,7 @@ import { UserUpdatePage } from '../pages/user/UserUpdate'
 import { TenantListPage } from '../pages/tenants/TenantList'
 import { TenantDetailPage } from '../pages/tenants/TenantDetail'
 import { RoomListPage } from '../pages/rooms/RoomList'
+import { DebtListPage } from '../pages/debts/DebtList'
 import { RoomDetailPage } from '../pages/rooms/RoomDetail'
 import { RoomDetailInfoPage } from '../pages/rooms/RoomDetailInfoPage'
 
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
                                 element: <div>Hoá đơn</div>,
                             },
                         ],
+                    },
+                    {
+                        path: '/debts',
+                        element: <DebtListPage />,
                     },
                     {
                         path: '/rooms',

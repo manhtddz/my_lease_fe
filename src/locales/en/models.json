@@ -18,5 +18,19 @@
         "is_representative": "Is Representative",
         "room_price_snapshot": "Room Price Snapshot",
         "note": "Note"
+    },
+    "debt": {
+        "title": "Debts",
+        "invoice_id": "Invoice ID",
+        "original_amount": "Original Amount",
+        "paid_amount": "Paid Amount",
+        "remaining_amount": "Remaining Amount",
+        "due_date": "Due Date",
+        "status": "Status",
+        "debt_type": "Debt Type",
+        "penalty_amount": "Penalty Amount",
+        "note": "Note",
+        "all_status": "All Status",
+        "all_debt_type": "All Types"
     }
 }

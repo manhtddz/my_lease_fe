@@ -9,6 +9,7 @@ import { roomRtkApi } from '../services/rtk/roomApiSlice'
 import { tenantRtkApi } from '../services/rtk/tenantApiSlice'
 import { userRtkApi } from '../services/rtk/userApiSlice'
 import { authRtkApi } from '../services/rtk/authApiSlice'
+import { debtRtkApi } from '../services/rtk/debtApiSlice'
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -21,4 +22,5 @@ export const rootReducer = combineReducers({
   [tenantRtkApi.reducerPath]: tenantRtkApi.reducer,
   [userRtkApi.reducerPath]: userRtkApi.reducer,
   [authRtkApi.reducerPath]: authRtkApi.reducer,
+  [debtRtkApi.reducerPath]: debtRtkApi.reducer,
 })

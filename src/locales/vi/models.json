@@ -18,5 +18,19 @@
         "is_representative": "Là người đại diện",
         "room_price_snapshot": "Giá phòng",
         "note": "Ghi chú"
+    },
+    "debt": {
+        "title": "Công nợ",
+        "invoice_id": "Mã hóa đơn",
+        "original_amount": "Số tiền gốc",
+        "paid_amount": "Đã thanh toán",
+        "remaining_amount": "Còn lại",
+        "due_date": "Hạn thanh toán",
+        "status": "Trạng thái",
+        "debt_type": "Loại công nợ",
+        "penalty_amount": "Tiền phạt",
+        "note": "Ghi chú",
+        "all_status": "Tất cả trạng thái",
+        "all_debt_type": "Tất cả loại"
     }
 }
