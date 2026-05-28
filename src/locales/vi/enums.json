@@ -25,5 +25,13 @@
             "0": "Người thuê phòng",
             "1": "Người đại diện"
         }
+    },
+    "invoice": {
+        "payment_status": {
+            "1": "Khởi tạo",
+            "2": "Đã thanh toán",
+            "3": "Thanh toán một phần",
+            "4": "Quá hạn chưa thanh toán"
+        }
     }
 }

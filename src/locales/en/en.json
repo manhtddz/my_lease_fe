@@ -23,7 +23,8 @@
     },
     "messages": {
         "no_data": "No data.",
-        "total_records": "Total {{total}} records"
+        "total_records": "Total {{total}} records",
+        "all": "All"
     },
     "pagination": {
         "page": "Page",

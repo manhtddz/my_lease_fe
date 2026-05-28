@@ -18,5 +18,12 @@
         "is_representative": "Is Representative",
         "room_price_snapshot": "Room Price Snapshot",
         "note": "Note"
+    },
+    "invoice": {
+        "room_number": "Room Number",
+        "representative_tenant_name": "Representative Tenant",
+        "total_amount": "Total Amount",
+        "payment_status": "Payment Status",
+        "note": "Note"
     }
 }

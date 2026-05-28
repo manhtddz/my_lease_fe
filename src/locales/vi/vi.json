@@ -23,7 +23,8 @@
     },
     "messages": {
         "no_data": "Chưa có dữ liệu.",
-        "total_records": "Tổng {{total}} bản ghi"
+        "total_records": "Tổng {{total}} bản ghi",
+        "all": "Tất cả"
     },
     "pagination": {
         "page": "Trang",

@@ -25,5 +25,13 @@
             "0": "Not representative occupant",
             "1": "Representative occupant"
         }
+    },
+    "invoice": {
+        "payment_status": {
+            "1": "Initial",
+            "2": "Paid",
+            "3": "Partially Paid",
+            "4": "Not Paid Overdue"
+        }
     }
 }

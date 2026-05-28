@@ -12,6 +12,7 @@ import { TenantDetailPage } from '../pages/tenants/TenantDetail'
 import { RoomListPage } from '../pages/rooms/RoomList'
 import { RoomDetailPage } from '../pages/rooms/RoomDetail'
 import { RoomDetailInfoPage } from '../pages/rooms/RoomDetailInfoPage'
+import { InvoiceListPage } from '../pages/invoices/InvoiceList'
 
 export const router = createBrowserRouter([
     {
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
                                 element: <div>Hoá đơn</div>,
                             },
                         ],
+                    },
+                    {
+                        path: '/invoices',
+                        element: <InvoiceListPage />,
                     },
                     {
                         path: '/rooms',
