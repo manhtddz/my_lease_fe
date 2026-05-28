@@ -13,7 +13,11 @@ export type Debt = {
     note: string | null
     debt_type: DebtTypeValueType
     penalty_amount: string
-    tenant_name: string
+
+    tenant?: {
+        id: number
+        name: string
+    }
 }
 
 export type DebtDataListParams = {

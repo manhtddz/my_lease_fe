@@ -177,7 +177,7 @@ export function DebtListPage() {
               debtListHook.list.map((debt: Debt) => (
                 <tr key={debt.id}>
                   <td>{debt.id}</td>
-                  <td>{debt.tenant_name}</td>
+                  <td>{debt.tenant.name ?? debt.tenant_id}</td>
                   <td>{debt.invoice_id}</td>
                   <td>{debt.original_amount}</td>
                   <td>{debt.paid_amount}</td>
