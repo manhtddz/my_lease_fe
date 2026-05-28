@@ -9,6 +9,7 @@ type Props = {
 const INITIAL_FORM: InvoiceSearchForm = {
   room_number: '',
   payment_status: '',
+  representative_tenant_name: '',
 }
 
 export function InvoiceSearchForm({ onSearch }: Props) {
@@ -37,6 +38,20 @@ export function InvoiceSearchForm({ onSearch }: Props) {
           placeholder="Nhập số phòng..."
           value={searchForm.room_number}
           onChange={(e) => setSearchForm((prev) => ({ ...prev, room_number: e.target.value }))}
+        />
+      </div>
+
+      <div className="col-md-4">
+        <label className="form-label small mb-1" htmlFor="search-representative_tenant_name">
+          {t('models.invoice.representative_tenant_name')}
+        </label>
+        <input
+          id="search-representative_tenant_name"
+          name="representative_tenant_name"
+          className="form-control form-control-sm"
+          placeholder="Nhập tên khách đại diện..."
+          value={searchForm.representative_tenant_name}
+          onChange={(e) => setSearchForm((prev) => ({ ...prev, representative_tenant_name: e.target.value }))}
         />
       </div>
 

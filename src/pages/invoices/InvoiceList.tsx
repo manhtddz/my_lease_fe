@@ -7,6 +7,7 @@ import { InvoiceSearchForm } from '../../components/search-forms/InvoiceSearchFo
 import { useTranslation } from 'react-i18next'
 import { useDeleteInvoiceMutation } from '../../services/rtk/invoiceApiSlice'
 import { PageLoadStatus } from '../../types/enums/PageLoadStatus'
+import { InvoicePaymentStatusEnum } from '../../types/enums/invoices/InvoicePaymentStatus'
 
 const PAYMENT_STATUS_BADGE: Record<number, string> = {
   1: 'bg-secondary',
@@ -79,12 +80,12 @@ export function InvoiceListPage() {
               invoiceListHook.list.map((invoice: Invoice) => (
                 <tr key={invoice.id}>
                   <td>{invoice.id}</td>
-                  <td>{invoice.room_number ?? invoice.room_id}</td>
-                  <td>{invoice.representative_tenant_name ?? invoice.representative_tenant_id}</td>
+                  <td>{invoice.room.room_number ?? invoice.room_id}</td>
+                  <td>{invoice.representative.name ?? invoice.representative_tenant_id}</td>
                   <td>{invoice.total_amount}</td>
                   <td>
                     <span className={`badge ${PAYMENT_STATUS_BADGE[invoice.payment_status] ?? 'bg-secondary'}`}>
-                      {t(`enums.invoice.payment_status.${invoice.payment_status}`)}
+                      {t(InvoicePaymentStatusEnum[invoice.payment_status])}
                     </span>
                   </td>
                   <td>{invoice.note ?? '—'}</td>

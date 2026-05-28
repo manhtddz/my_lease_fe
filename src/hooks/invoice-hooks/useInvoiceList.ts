@@ -5,7 +5,7 @@ import { useGetInvoicesQuery } from '../../services/rtk/invoiceApiSlice'
 import { PageLoadStatus, type PageLoadStatusType } from '../../types/enums/PageLoadStatus'
 import type { ApiError } from '../../types/ex/ApiError'
 
-const initialSearchForm: InvoiceSearchForm = { room_number: '', payment_status: '' }
+const initialSearchForm: InvoiceSearchForm = { room_number: '', payment_status: '', representative_tenant_name: '' }
 
 export function useInvoiceList() {
   const base = useBaseList<InvoiceSearchForm, InvoiceDataListParams>({
@@ -16,6 +16,7 @@ export function useInvoiceList() {
       sort_by: b.sortBy as InvoiceDataListParams['sort_by'],
       sort_dir: b.sortDir as InvoiceDataListParams['sort_dir'],
       room_number: sf.room_number || undefined,
+      representative_tenant_name: sf.representative_tenant_name || undefined,
       payment_status: sf.payment_status ? (Number(sf.payment_status) as InvoicePaymentStatusType) : undefined,
     }),
   })

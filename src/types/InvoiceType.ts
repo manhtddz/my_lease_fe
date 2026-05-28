@@ -7,8 +7,15 @@ export type Invoice = {
   total_amount: string
   payment_status: InvoicePaymentStatusType
   note: string | null
-  room_number?: string
-  representative_tenant_name?: string
+
+  representative?: {
+    id: number,
+    name: string
+  }
+  room?: {
+    id: number,
+    room_number?: string
+  }
 }
 
 export type InvoiceDataListParams = {
@@ -17,6 +24,7 @@ export type InvoiceDataListParams = {
   sort_by?: 'id' | 'total_amount'
   sort_dir?: 'asc' | 'desc'
   room_number?: string
+  representative_tenant_name?: string
   payment_status?: InvoicePaymentStatusType
 }
 
@@ -30,4 +38,5 @@ export type InvoiceDataListResult = {
 export type InvoiceSearchForm = {
   room_number: string
   payment_status: string
+  representative_tenant_name: string
 }
